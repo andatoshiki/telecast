@@ -593,7 +593,6 @@ export async function getChannelInfo(options: ChannelQuery = {}): Promise<Channe
 
   const cachedResult = cache.get(cacheKey)
   if (cachedResult) {
-    console.info('Cache hit', { before, after, q, id })
     return JSON.parse(JSON.stringify(cachedResult))
   }
 
@@ -602,8 +601,6 @@ export async function getChannelInfo(options: ChannelQuery = {}): Promise<Channe
     : `https://${cfg.telegramHost}/s/${cfg.channel}`
 
   const headers = normalizeHeaders(options.requestHeaders)
-
-  console.info('Fetching channel data', { url, before, after, q, id })
 
   let html = ''
   try {
@@ -620,14 +617,9 @@ export async function getChannelInfo(options: ChannelQuery = {}): Promise<Channe
     })
   }
   catch (error) {
-    console.error('Failed to fetch channel data', {
-      url,
-      before,
-      after,
-      q,
-      id,
-      error: error instanceof Error ? error.message : String(error),
-    })
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const fetchContext = `before=${before || '-'} after=${after || '-'} q=${q || '-'} id=${id || '-'}`
+    console.error(`[telecast] failed to fetch channel data ${url} ${fetchContext} error=${errorMessage}`)
 
     const baselineCacheKey = JSON.stringify({
       channel: cfg.channel,

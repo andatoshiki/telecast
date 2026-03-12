@@ -3,6 +3,8 @@ import { Buffer } from 'node:buffer'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import { pathToFileURL } from 'node:url'
+import { readGeneratedStaticSnapshot } from '../src/lib/telegram/static-snapshot'
 
 const OG_WIDTH = 1200
 const OG_HEIGHT = 630
@@ -418,4 +420,24 @@ export async function generateOgImageFromChannel(channel: ChannelInfo) {
     descriptionLength: description.length,
     tagsCount: tags.length,
   }
+}
+
+async function runCli() {
+  const snapshot = await readGeneratedStaticSnapshot()
+  if (!snapshot?.root) {
+    throw new Error('[telecast] generated snapshot not found run `pnpm sync` before generating og image')
+  }
+
+  const result = await generateOgImageFromChannel(snapshot.root)
+  console.info(`[telecast] og image: ${result.relativePath}`)
+}
+
+const isDirectRun = Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href
+
+if (isDirectRun) {
+  runCli().catch((error) => {
+    console.error('[telecast] failed to generate og image')
+    console.error(error)
+    process.exitCode = 1
+  })
 }

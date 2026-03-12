@@ -2,7 +2,7 @@ import type { StaticSnapshot } from '../src/lib/telegram/static-snapshot'
 import type { ChannelInfo } from '../src/lib/types'
 import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
-import { access, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { access, mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import * as cheerio from 'cheerio'
@@ -11,11 +11,9 @@ import { SITE_CONSTANTS } from '../src/lib/constant'
 import { buildPostSearchDataset } from '../src/lib/search/search-documents'
 import {
   buildRemoteStaticSnapshot,
-  getGeneratedStaticSnapshotPath,
   writeGeneratedStaticSnapshot,
 } from '../src/lib/telegram/static-snapshot'
 import { generateOgImageFromChannel } from './generate-og-image'
-import { buildImageKitMirror } from './imagekit-uploader'
 
 const SEARCH_INDEX_OUTPUT_PATH = path.resolve(process.cwd(), 'public/search/index.json')
 
@@ -65,7 +63,16 @@ interface LocalMirrorStats {
   downloadedCount: number
 }
 
-type MirrorStats = LocalMirrorStats | Awaited<ReturnType<typeof buildImageKitMirror>> extends { getStats: () => infer S } ? S : never
+type MirrorStats = LocalMirrorStats
+
+interface BuildMediaMirrorOptions {
+  onResolved?: () => void
+}
+
+interface MirrorProgressTracker {
+  tick: () => void
+  finish: () => void
+}
 
 function hasHttpProtocol(value: string) {
   return /^https?:\/\//i.test(value)
@@ -73,20 +80,6 @@ function hasHttpProtocol(value: string) {
 
 function fileExists(filePath: string) {
   return access(filePath).then(() => true).catch(() => false)
-}
-
-async function shouldSkipSyncInDev() {
-  const snapshotPath = getGeneratedStaticSnapshotPath()
-  const indexExists = await fileExists(SEARCH_INDEX_OUTPUT_PATH)
-  const snapshotExists = await fileExists(snapshotPath)
-  if (!indexExists || !snapshotExists) {
-    return false
-  }
-
-  const refreshWindowMs = SITE_CONSTANTS.staticBuild.devRefreshMinutes * 60 * 1000
-  const snapshotStat = await stat(snapshotPath)
-  const ageMs = Date.now() - snapshotStat.mtimeMs
-  return ageMs >= 0 && ageMs < refreshWindowMs
 }
 
 function normalizeProxyLikeUrl(input: string) {
@@ -212,7 +205,156 @@ function collectStyleUrls(styleValue: string) {
   return urls
 }
 
-async function buildMediaMirror() {
+function collectHtmlMediaCandidates(html: string) {
+  if (!html) {
+    return []
+  }
+
+  const $ = cheerio.load(`<div id=\"root\">${html}</div>`, {}, false)
+  const root = $('#root')
+  const urls: string[] = []
+
+  for (const [selector, attribute] of SUPPORTED_MEDIA_ATTRIBUTES) {
+    const nodes = root.find(selector).toArray()
+
+    for (const node of nodes) {
+      const element = $(node)
+      const currentValue = element.attr(attribute)?.trim()
+      if (!currentValue) {
+        continue
+      }
+
+      if (attribute === 'srcset') {
+        const entries = parseSrcsetEntries(currentValue)
+        for (const entry of entries) {
+          urls.push(entry.url)
+        }
+        continue
+      }
+
+      urls.push(currentValue)
+    }
+  }
+
+  const styleNodes = root.find('[style*="url("]').toArray()
+  for (const node of styleNodes) {
+    const element = $(node)
+    const styleValue = element.attr('style') || ''
+    if (!styleValue) {
+      continue
+    }
+
+    urls.push(...collectStyleUrls(styleValue))
+  }
+
+  return urls
+}
+
+function trackMirrorCandidate(rawValue: string, candidates: Set<string>) {
+  const normalizedUrl = normalizeRemoteMediaUrl(rawValue)
+  if (!normalizedUrl || normalizedUrl.startsWith(`${MEDIA_DIRECTORY}/`)) {
+    return
+  }
+
+  candidates.add(normalizedUrl)
+}
+
+function countSnapshotMediaCandidates(snapshot: StaticSnapshot) {
+  const candidates = new Set<string>()
+  const channels: ChannelInfo[] = [snapshot.root, ...snapshot.pages.map(page => page.channel)]
+
+  for (const channel of channels) {
+    if (channel.avatar) {
+      trackMirrorCandidate(channel.avatar, candidates)
+    }
+
+    for (const candidate of collectHtmlMediaCandidates(channel.descriptionHTML || '')) {
+      trackMirrorCandidate(candidate, candidates)
+    }
+
+    for (const post of channel.posts) {
+      for (const candidate of collectHtmlMediaCandidates(post.content || '')) {
+        trackMirrorCandidate(candidate, candidates)
+      }
+
+      for (const reaction of post.reactions) {
+        if (reaction.emojiImage) {
+          trackMirrorCandidate(reaction.emojiImage, candidates)
+        }
+      }
+    }
+  }
+
+  return candidates.size
+}
+
+function formatMirrorProgressBar(completed: number, total: number, width = 28) {
+  const safeTotal = Math.max(total, 1)
+  const ratio = Math.min(1, completed / safeTotal)
+  const filled = Math.round(width * ratio)
+  const empty = Math.max(0, width - filled)
+  const percent = Math.round(ratio * 100)
+  return `[${'='.repeat(filled)}${'-'.repeat(empty)}] ${percent}% (${completed}/${total})`
+}
+
+function createMirrorProgressTracker(total: number): MirrorProgressTracker {
+  if (total <= 0) {
+    return {
+      tick() {},
+      finish() {},
+    }
+  }
+
+  let completed = 0
+  let closed = false
+  let lastLoggedPercent = 0
+  const isTty = Boolean(process.stdout.isTTY)
+
+  const getLine = () => `[telecast] mirroring media ${formatMirrorProgressBar(completed, total)}`
+
+  if (isTty) {
+    process.stdout.write(`${getLine()}\r`)
+  }
+  else {
+    console.info(getLine())
+  }
+
+  return {
+    tick() {
+      if (closed) {
+        return
+      }
+
+      completed = Math.min(total, completed + 1)
+      if (isTty) {
+        process.stdout.write(`${getLine()}\r`)
+        return
+      }
+
+      const percent = Math.round((completed / total) * 100)
+      if (percent - lastLoggedPercent >= 10 || completed === total) {
+        lastLoggedPercent = percent
+        console.info(getLine())
+      }
+    },
+    finish() {
+      if (closed) {
+        return
+      }
+
+      closed = true
+      completed = total
+      if (isTty) {
+        process.stdout.write(`${getLine()}\n`)
+      }
+      else if (lastLoggedPercent < 100) {
+        console.info(getLine())
+      }
+    },
+  }
+}
+
+async function buildMediaMirror(options: BuildMediaMirrorOptions = {}) {
   await mkdir(MEDIA_OUTPUT_DIR, { recursive: true })
 
   const replacementCache = new Map<string, Promise<string>>()
@@ -278,6 +420,9 @@ async function buildMediaMirror() {
       }
       catch {
         return rawValue
+      }
+      finally {
+        options.onResolved?.()
       }
     })()
 
@@ -349,33 +494,41 @@ function cloneSnapshot(snapshot: StaticSnapshot): StaticSnapshot {
 
 async function mirrorSnapshotAssets(snapshot: StaticSnapshot) {
   const mirrored = cloneSnapshot(snapshot)
-  const { mirrorUrl, getStats } = SITE_CONSTANTS.imagekit
-    ? await buildImageKitMirror()
-    : await buildMediaMirror()
+  const mediaCandidateCount = countSnapshotMediaCandidates(mirrored)
+  const progress = createMirrorProgressTracker(mediaCandidateCount)
+  const { mirrorUrl, getStats } = await buildMediaMirror({ onResolved: progress.tick })
+  if (mediaCandidateCount === 0) {
+    console.info('[telecast] no remote media assets detected for mirroring.')
+  }
 
-  const channels: ChannelInfo[] = [mirrored.root, ...mirrored.pages.map(page => page.channel)]
+  try {
+    const channels: ChannelInfo[] = [mirrored.root, ...mirrored.pages.map(page => page.channel)]
 
-  for (const channel of channels) {
-    if (channel.avatar) {
-      channel.avatar = await mirrorUrl(channel.avatar)
-    }
+    for (const channel of channels) {
+      if (channel.avatar) {
+        channel.avatar = await mirrorUrl(channel.avatar)
+      }
 
-    channel.descriptionHTML = await rewriteHtmlMediaUrls(channel.descriptionHTML || '', mirrorUrl)
+      channel.descriptionHTML = await rewriteHtmlMediaUrls(channel.descriptionHTML || '', mirrorUrl)
 
-    for (const post of channel.posts) {
-      post.content = await rewriteHtmlMediaUrls(post.content || '', mirrorUrl)
+      for (const post of channel.posts) {
+        post.content = await rewriteHtmlMediaUrls(post.content || '', mirrorUrl)
 
-      for (const reaction of post.reactions) {
-        if (reaction.emojiImage) {
-          reaction.emojiImage = await mirrorUrl(reaction.emojiImage)
+        for (const reaction of post.reactions) {
+          if (reaction.emojiImage) {
+            reaction.emojiImage = await mirrorUrl(reaction.emojiImage)
+          }
         }
       }
     }
-  }
 
-  return {
-    snapshot: mirrored,
-    stats: getStats() as MirrorStats,
+    return {
+      snapshot: mirrored,
+      stats: getStats() as MirrorStats,
+    }
+  }
+  finally {
+    progress.finish()
   }
 }
 
@@ -404,18 +557,6 @@ async function writeStaticSearchIndex(snapshot: StaticSnapshot) {
   await writeFile(SEARCH_INDEX_OUTPUT_PATH, JSON.stringify(payload, null, 2), 'utf8')
 }
 
-async function readSnapshotFile() {
-  try {
-    const snapshotPath = getGeneratedStaticSnapshotPath()
-    const fileContent = await readFile(snapshotPath, 'utf8')
-    const parsed = JSON.parse(fileContent) as StaticSnapshot
-    return parsed
-  }
-  catch {
-    return null
-  }
-}
-
 function hasPosts(snapshot: StaticSnapshot | null | undefined) {
   if (!snapshot) {
     return false
@@ -427,78 +568,34 @@ function hasPosts(snapshot: StaticSnapshot | null | undefined) {
 }
 
 async function run() {
-  const mode = process.argv.includes('--build') ? 'build' : 'dev'
-  const allowEmpty = process.argv.includes('--allow-empty')
+  const shouldGenerateOgImage = process.argv.includes('--og-image')
 
-  if (mode === 'dev' && !process.argv.includes('--force')) {
-    const skip = await shouldSkipSyncInDev()
-    if (skip) {
-      console.info('[sync-static-content] Snapshot and search index are fresh. Skipping dev sync.')
-      return
-    }
-  }
-
-  const previousSnapshot = await readSnapshotFile()
-
-  console.info('[sync-static-content] Fetching Telegram snapshot...')
   const remoteSnapshot = await buildRemoteStaticSnapshot()
 
-  if (!hasPosts(remoteSnapshot) && !allowEmpty) {
-    if (hasPosts(previousSnapshot)) {
-      console.warn('[sync-static-content] Remote snapshot is empty. Keeping existing generated snapshot.')
-      const { snapshot: mirroredPreviousSnapshot, stats } = await mirrorSnapshotAssets(previousSnapshot as StaticSnapshot)
-      await writeGeneratedStaticSnapshot(mirroredPreviousSnapshot)
-      await writeStaticSearchIndex(mirroredPreviousSnapshot)
-      const ogResult = await generateOgImageFromChannel(mirroredPreviousSnapshot.root)
-      console.info('[sync-static-content] Completed using existing snapshot.')
-      console.info(`[sync-static-content] Pages: ${mirroredPreviousSnapshot.pages.length}, Posts: ${mirroredPreviousSnapshot.postIds.length}`)
-      if (stats.provider === 'imagekit') {
-        console.info(`[sync-static-content] Media URLs processed: ${stats.resolvedCount}, Uploaded to ImageKit: ${stats.uploadedCount}`)
-        console.info(`[sync-static-content] ImageKit endpoint: ${stats.imageKitEndpoint}, Force WebP: ${stats.forceWebp ? 'yes' : 'no'}`)
-      }
-      else {
-        console.info(`[sync-static-content] Mirrored media URLs: ${stats.resolvedCount}, New downloads: ${stats.downloadedCount}`)
-      }
-      console.info(`[sync-static-content] OG image: ${ogResult.relativePath} (avatar: ${ogResult.usedAvatar ? 'yes' : 'no'})`)
-      return
-    }
-
-    throw new Error(
-      `Remote snapshot has no posts and no previous generated snapshot exists. ${
-        'Check network access to Telegram or run with --allow-empty to keep an intentionally empty snapshot.'
-      }`,
-    )
+  if (!hasPosts(remoteSnapshot)) {
+    throw new Error('[telecast] remote snapshot has no posts sync aborted to avoid writing empty content')
   }
 
-  console.info(SITE_CONSTANTS.imagekit
-    ? '[sync-static-content] Uploading media to ImageKit...'
-    : '[sync-static-content] Mirroring media locally...')
   const { snapshot: mirroredSnapshot, stats } = await mirrorSnapshotAssets(remoteSnapshot)
 
   await writeGeneratedStaticSnapshot(mirroredSnapshot)
   await writeStaticSearchIndex(mirroredSnapshot)
-  const ogResult = await generateOgImageFromChannel(mirroredSnapshot.root)
 
-  console.info('[sync-static-content] Completed.')
-  console.info(`[sync-static-content] Pages: ${mirroredSnapshot.pages.length}, Posts: ${mirroredSnapshot.postIds.length}`)
-  if (stats.provider === 'imagekit') {
-    console.info(`[sync-static-content] Media URLs processed: ${stats.resolvedCount}, Uploaded to ImageKit: ${stats.uploadedCount}`)
-    console.info(`[sync-static-content] ImageKit endpoint: ${stats.imageKitEndpoint}, Force WebP: ${stats.forceWebp ? 'yes' : 'no'}`)
+  console.info('[telecast] completed.')
+  console.info(`[telecast] pages: ${mirroredSnapshot.pages.length}, posts: ${mirroredSnapshot.postIds.length}`)
+  console.info(`[telecast] mirrored media urls: ${stats.resolvedCount}, new downloads: ${stats.downloadedCount}`)
+
+  if (shouldGenerateOgImage) {
+    const ogResult = await generateOgImageFromChannel(mirroredSnapshot.root)
+    console.info(`[telecast] og image: ${ogResult.relativePath}`)
   }
   else {
-    console.info(`[sync-static-content] Mirrored media URLs: ${stats.resolvedCount}, New downloads: ${stats.downloadedCount}`)
-  }
-  console.info(`[sync-static-content] OG image: ${ogResult.relativePath} (avatar: ${ogResult.usedAvatar ? 'yes' : 'no'})`)
-
-  const snapshotPath = getGeneratedStaticSnapshotPath()
-  const savedSnapshot = await readSnapshotFile()
-  if (!savedSnapshot) {
-    throw new Error(`Snapshot was not written to ${snapshotPath}`)
+    console.info('[telecast] og image generation skipped pass --og-image to generate /og-auto.png')
   }
 }
 
 run().catch((error) => {
-  console.error('[sync-static-content] Failed to sync static content.')
+  console.error('[telecast] failed to sync static content')
   console.error(error)
   process.exitCode = 1
 })

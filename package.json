@@ -39,14 +39,14 @@
     "node": ">=22"
   },
   "scripts": {
-    "predev": "pnpm sync:content --dev --force",
-    "dev": "next dev -p 4321",
-    "prebuild": "pnpm sync:content --build",
+    "dev": "pnpm sync && pnpm dev:next",
+    "dev:next": "next dev -p 4321",
     "build": "next build --webpack",
     "start": "next start -p 4321",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "sync:content": "node --import tsx scripts/sync-static-content.ts",
+    "sync": "node --import tsx scripts/sync-static-content.ts",
+    "og:image": "node --import tsx scripts/generate-og-image.ts",
     "release": "changelogen --release && git push --follow-tags",
     "postinstall": "simple-git-hooks"
   },
@@ -99,12 +99,12 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
-  "simple-git-hooks": {
-    "commit-msg": "pnpm commitlint --edit $1"
-  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "dplayer"
     ]
+  },
+  "simple-git-hooks": {
+    "commit-msg": "pnpm commitlint --edit $1"
   }
 }
