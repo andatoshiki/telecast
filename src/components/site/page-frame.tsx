@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react'
 import type { AppLocale } from '@/lib/i18n'
-import packageJson from '../../../package.json'
 import type { ChannelInfo } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
-import { Github, Globe, House, Rss, Send, Tag } from 'lucide-react'
+import { Github, House, Languages, Rss, Send, Tag } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,7 +15,9 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { buildStaticProxyUrl, getAppConfig } from '@/lib/config'
 import { getLocaleMessages, localizePath, normalizeAppLocale, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { renderInlineMarkdown } from '@/lib/sanitize'
 import { cn } from '@/lib/utils'
+import packageJson from '../../../package.json'
 import { CommandPalette } from './command-palette'
 import { ContentCodeCopy } from './content-code-copy'
 import { ContentTwemoji } from './content-twemoji'
@@ -39,10 +40,6 @@ interface PageFrameProps {
 function getPageTitle(currentPath: string, messages: LocaleMessages, pageNumber?: number) {
   if (currentPath === '/tags') {
     return messages.pageTitle.tags
-  }
-
-  if (currentPath === '/links') {
-    return messages.pageTitle.links
   }
 
   if (currentPath === '/search') {
@@ -100,7 +97,6 @@ export function PageFrame({
   const navItems = [
     { title: resolvedMessages.nav.home, href: '/', enabled: true },
     { title: resolvedMessages.nav.tags, href: '/tags', enabled: true },
-    { title: resolvedMessages.nav.links, href: '/links', enabled: config.links.length > 0 },
   ]
   const enabledNavItems = navItems.filter(item => item.enabled)
   const internalCommandItems = [
@@ -111,7 +107,6 @@ export function PageFrame({
       : null,
   ].filter((item): item is { title: string, href: string } => Boolean(item))
   const customCommandItems = [
-    ...config.navs,
     config.website
       ? { title: resolvedMessages.external.website, href: config.website }
       : null,
@@ -135,11 +130,17 @@ export function PageFrame({
   const sidebarIconActiveClass = 'bg-muted/70 text-foreground'
   const isHomeActive = currentPath === '/'
   const isTagsActive = currentPath === '/tags'
+  const bannerMarkdownHtml = renderInlineMarkdown(config.customBanner)
+  const footerMarkdownHtml = renderInlineMarkdown(config.customFooter)
 
   return (
     <div className="min-h-screen bg-background">
-      {config.bannerHtml
-        ? <div dangerouslySetInnerHTML={{ __html: config.bannerHtml }} />
+      {bannerMarkdownHtml
+        ? (
+            <div className="border-b bg-muted/30 px-4 py-2 text-center text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere] [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-foreground [&_code]:rounded [&_code]:bg-background [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_strong]:font-semibold">
+              <div dangerouslySetInnerHTML={{ __html: bannerMarkdownHtml }} />
+            </div>
+          )
         : null}
 
       <div className="mx-auto grid max-w-[784px] grid-cols-[60px_minmax(0,1fr)] sm:grid-cols-[72px_minmax(0,1fr)] border-r">
@@ -261,7 +262,6 @@ export function PageFrame({
                       navItems={enabledNavItems}
                       internalNavItems={internalCommandItems}
                       customNavItems={customCommandItems}
-                      tags={config.tags}
                       locale={resolvedLocale}
                       messages={resolvedMessages}
                       triggerMode="icon"
@@ -285,7 +285,7 @@ export function PageFrame({
                         className={sidebarIconButtonClass}
                         aria-label={resolvedMessages.sidebar.language}
                       >
-                        <Globe className={cn(sidebarIconGlyphClass, 'fill-none')} />
+                        <Languages className={cn(sidebarIconGlyphClass, 'fill-none')} />
                         <span className="sr-only">{resolvedMessages.sidebar.language}</span>
                       </Button>
                     </DropdownMenuTrigger>
@@ -358,10 +358,10 @@ export function PageFrame({
           <div>{children}</div>
         </main>
 
-        {config.footerOverride
+        {footerMarkdownHtml
           ? (
               <footer className="col-start-2 border-t px-4 py-5 text-center text-xs leading-relaxed text-muted-foreground">
-                <div dangerouslySetInnerHTML={{ __html: config.footerOverride }} />
+                <div className="[overflow-wrap:anywhere] [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: footerMarkdownHtml }} />
               </footer>
             )
           : (
@@ -373,7 +373,10 @@ export function PageFrame({
                   .
                 </p>
                 <p className="mt-1.5">
-                  <span className="font-mono text-[10px]">v{packageJson.version}</span>
+                  <span className="font-mono text-[10px]">
+                    v
+                    {packageJson.version}
+                  </span>
                   {' · Powered by '}
                   <a href="https://nextjs.org" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 transition-colors hover:text-foreground">Next.js</a>
                   {', '}

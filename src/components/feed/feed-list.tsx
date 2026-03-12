@@ -15,10 +15,8 @@ interface FeedListProps {
   channelTitle?: string
   channelUsername?: string
   channelAvatar?: string
-  commentsEnabled: boolean
   showBefore?: boolean
   showAfter?: boolean
-  showComments?: boolean
   olderHref?: string | null
   newerHref?: string | null
   uiLocale: AppLocale
@@ -33,10 +31,8 @@ export function FeedList({
   channelTitle,
   channelUsername,
   channelAvatar,
-  commentsEnabled,
   showBefore = true,
   showAfter = true,
-  showComments = false,
   olderHref,
   newerHref,
   uiLocale,
@@ -65,7 +61,6 @@ export function FeedList({
           channelTitle={channelTitle}
           channelUsername={channelUsername}
           channelAvatar={channelAvatar}
-          showComments={commentsEnabled && showComments}
           channelName={channelName}
           uiLocale={uiLocale}
           messages={messages}

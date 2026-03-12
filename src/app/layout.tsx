@@ -11,9 +11,14 @@ const config = getAppConfig()
 const { seo, analytics } = config
 
 const siteUrl = config.siteUrl || 'https://example.com'
-const defaultTitle = seo.title || seo.ogTitle || enMessages.metadata.titleDefault
-const defaultDescription = seo.description || seo.ogDescription || enMessages.metadata.description
+const defaultTitle = seo.title || enMessages.metadata.titleDefault
+const defaultDescription = seo.description || enMessages.metadata.description
 const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
+const metaKeywords = Array.from(new Set(
+  [...seo.keywords]
+    .map(keyword => keyword.replace(/^#/, '').trim())
+    .filter(Boolean),
+))
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -22,41 +27,33 @@ export const metadata: Metadata = {
     template: enMessages.metadata.titleTemplate,
   },
   description: defaultDescription,
-  keywords: seo.keywords.length > 0 ? seo.keywords : undefined,
+  keywords: metaKeywords.length > 0 ? metaKeywords : undefined,
   authors: seo.author ? [{ name: seo.author }] : undefined,
   creator: seo.author || undefined,
   openGraph: {
     type: 'website',
-    siteName: seo.ogSiteName || defaultTitle,
-    title: seo.ogTitle || defaultTitle,
-    description: seo.ogDescription || defaultDescription,
-    url: seo.ogUrl || seo.canonical || siteUrl,
+    siteName: defaultTitle,
+    title: defaultTitle,
+    description: defaultDescription,
+    url: siteUrl,
     ...(resolvedOgImage ? { images: [{ url: resolvedOgImage, width: 1200, height: 630, alt: defaultTitle }] } : {}),
   },
   twitter: {
-    card: seo.twitterCard || 'summary_large_image',
-    title: seo.ogTitle || defaultTitle,
-    description: seo.ogDescription || defaultDescription,
+    card: 'summary_large_image',
+    title: defaultTitle,
+    description: defaultDescription,
     ...(resolvedOgImage ? { images: [resolvedOgImage] } : {}),
-    ...(seo.twitterCreator ? { creator: seo.twitterCreator } : config.twitter ? { creator: `@${config.twitter}` } : {}),
-    ...(seo.twitterSite ? { site: seo.twitterSite } : {}),
+    ...(config.twitter ? { creator: `@${config.twitter}` } : {}),
   },
   alternates: {
-    ...(seo.canonical ? { canonical: seo.canonical } : {}),
+    canonical: siteUrl,
     types: {
       'application/rss+xml': '/rss.xml',
     },
   },
   robots: {
-    index: seo.robots.index,
-    follow: seo.robots.follow,
-    googleBot: {
-      'index': seo.robots.googleBot.index,
-      'follow': seo.robots.googleBot.follow,
-      'max-video-preview': seo.robots.googleBot['max-video-preview'],
-      'max-image-preview': seo.robots.googleBot['max-image-preview'],
-      'max-snippet': seo.robots.googleBot['max-snippet'],
-    },
+    index: !seo.noIndex,
+    follow: !seo.noFollow,
   },
 }
 
@@ -68,9 +65,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           data={{
             '@context': 'https://schema.org',
             '@type': 'Blog',
-            'name': seo.ogSiteName || defaultTitle,
+            'name': defaultTitle,
             'description': defaultDescription,
-            'url': seo.ogUrl || seo.canonical || siteUrl,
+            'url': siteUrl,
             'author': {
               '@type': 'Person',
               'name': seo.author || 'Unknown',

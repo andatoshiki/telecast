@@ -7,14 +7,12 @@ export interface LocaleMessages {
   nav: {
     home: string
     tags: string
-    links: string
     search: string
     back: string
   }
   pageTitle: {
     home: string
     tags: string
-    links: string
     search: string
     page: string
   }
@@ -41,7 +39,6 @@ export interface LocaleMessages {
     older: string
     newer: string
     edited: string
-    discussion: string
     reactionsAndViewsAria: string
     viewCountTitle: string
     channelAvatarAlt: string
@@ -109,14 +106,12 @@ export const enMessages: LocaleMessages = {
   nav: {
     home: 'Home',
     tags: 'Tags',
-    links: 'Links',
     search: 'Search',
     back: 'Back',
   },
   pageTitle: {
     home: 'Home',
     tags: 'Tags',
-    links: 'Links',
     search: 'Search',
     page: 'Page',
   },
@@ -143,7 +138,6 @@ export const enMessages: LocaleMessages = {
     older: 'Older',
     newer: 'Newer',
     edited: 'Edited',
-    discussion: 'Discussion',
     reactionsAndViewsAria: 'Post reactions and views',
     viewCountTitle: 'Telegram view count',
     channelAvatarAlt: 'Channel avatar',

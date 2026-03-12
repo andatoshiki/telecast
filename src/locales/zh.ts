@@ -9,14 +9,12 @@ export const zhMessages: LocaleMessages = {
   nav: {
     home: '首页',
     tags: '标签',
-    links: '链接',
     search: '搜索',
     back: '返回',
   },
   pageTitle: {
     home: '首页',
     tags: '标签',
-    links: '链接',
     search: '搜索',
     page: '页面',
   },
@@ -43,7 +41,6 @@ export const zhMessages: LocaleMessages = {
     older: '更早',
     newer: '更新',
     edited: '已编辑',
-    discussion: '讨论',
     reactionsAndViewsAria: '反应与浏览量',
     viewCountTitle: 'Telegram 浏览量',
     channelAvatarAlt: '频道头像',

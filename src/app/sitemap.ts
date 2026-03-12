@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const snapshot = await getStaticSnapshot()
 
   const staticRoutes = SUPPORTED_LOCALES.flatMap(locale =>
-    ['', '/tags', '/links', '/search'].map(path => ({
+    ['', '/tags', '/search'].map(path => ({
       url: `${siteUrl}/${locale}${path}`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,

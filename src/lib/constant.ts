@@ -1,44 +1,16 @@
-import type { ExternalLink, NavLink } from './types'
-
-export interface StaticBuildConfig {
-  maxPages: number
-  devRefreshMinutes: number
-}
-
 export interface MediaMirrorConfig {
   directory: string
   userAgent: string
-}
-
-export interface GoogleBotConfig {
-  'index': boolean
-  'follow': boolean
-  'max-video-preview': number
-  'max-image-preview': 'none' | 'standard' | 'large'
-  'max-snippet': number
-}
-
-export interface RobotsConfig {
-  index: boolean
-  follow: boolean
-  googleBot: GoogleBotConfig
 }
 
 export interface SeoConfig {
   title: string
   description: string
   ogImage: string
-  ogTitle: string
-  ogDescription: string
-  ogUrl: string
-  ogSiteName: string
-  twitterCard: 'summary' | 'summary_large_image'
-  twitterCreator: string
-  twitterSite: string
   keywords: string[]
   author: string
-  canonical: string
-  robots: RobotsConfig
+  noIndex: boolean
+  noFollow: boolean
 }
 
 export interface AnalyticsConfig {
@@ -55,66 +27,65 @@ export interface SiteConstantConfig {
   telegramHost: string
   staticProxy: string
   hideDescription: boolean
-  commentsEnabled: boolean
   reactionsEnabled: boolean
-  noIndex: boolean
-  noFollow: boolean
   website: string
   twitter: string
   github: string
   telegram: string
   mastodon: string
   bluesky: string
-  tags: string[]
-  links: ExternalLink[]
-  navs: NavLink[]
-  bannerHtml: string
-  footerOverride: string
+  customBanner: string
+  customFooter: string
   rssBeautify: boolean
   seo: SeoConfig
   analytics: AnalyticsConfig
-  imagekit: boolean
-  staticBuild: StaticBuildConfig
+  maxPages: number
   mediaMirror: MediaMirrorConfig
 }
 
 export const SITE_CONSTANTS: SiteConstantConfig = {
+  // Telegram channel username (without @) to mirror content from.
   channel: 'toshikidev',
+  // Default locale for the site (e.g. en, ja, zh).
   locale: 'en',
+  // Timezone for date formatting (e.g. UTC, America/New_York).
   timezone: 'UTC',
+  // Canonical base URL of the published site.
   siteUrl: 'https://tg.toshiki.dev',
+  // Telegram host used for channel fetches and public links (e.g. t.me).
   telegramHost: 't.me',
-  // Keep empty unless you need a runtime proxy for Telegram-origin media URLs.
+  // Proxy base URL for Telegram-origin media. Leave empty unless you need a runtime proxy.
   staticProxy: '',
+  // Whether to hide the channel description on the site.
   hideDescription: false,
-  commentsEnabled: false,
+  // Whether to show Telegram-style reactions on posts.
   reactionsEnabled: true,
-  noIndex: false,
-  noFollow: false,
+  // Main website URL for the author/org.
   website: 'https://toshiki.dev',
-  // Usernames only — no URL prefix needed
+  // Twitter/X username only (no URL prefix).
   twitter: 'andatoshiki',
+  // GitHub username only (no URL prefix).
   github: 'andatoshiki',
+  // Telegram username only (no URL prefix).
   telegram: 'toshikidev',
+  // Mastodon profile host/path without protocol (e.g. mastodon.social/@username).
   mastodon: 'mastodon.social/@andatoshiki',
+  // Bluesky handle (e.g. username.bsky.social).
   bluesky: 'andatoshiki.bsky.social',
-  tags: [],
-  links: [],
-  navs: [],
-  bannerHtml: '',
-  footerOverride: '',
+  // Optional inline markdown shown above main content (e.g. **alert**, [link](https://...)).
+  customBanner: '**Open source under AGPL-3.0.** [Get Telecast on GitHub](https://github.com/andatohsiki/telecast) and launch your own instance in minutes with minimal configuration!',
+  // Optional inline markdown to replace the default footer.
+  customFooter: '',
+  // Whether to beautify RSS output with XSLT styling.
   rssBeautify: true,
   seo: {
+    // Site title shown in browser tab and search results.
     title: 'Telecast – Anda Toshiki',
+    // Meta description for search engines and social previews.
     description: 'Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!',
+    // Open Graph image path for social sharing (e.g. /og-auto.png).
     ogImage: '/og-auto.png',
-    ogTitle: 'Telecast – Anda Toshiki',
-    ogDescription: 'Tech notes, development logs, and microblog posts by Anda Toshiki.',
-    ogUrl: 'https://tg.toshiki.dev',
-    ogSiteName: 'Telecast',
-    twitterCard: 'summary_large_image',
-    twitterCreator: '@andatoshiki',
-    twitterSite: '@toshikidev',
+    // SEO keywords for meta tags.
     keywords: [
       'telecast',
       'toshikidev',
@@ -127,32 +98,27 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
       'open source',
       'web development',
     ],
+    // Author name for meta tags and attribution.
     author: 'Anda Toshiki',
-    canonical: 'https://tg.toshiki.dev',
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        'index': true,
-        'follow': true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
+    // Whether to emit robots noindex for the site.
+    noIndex: false,
+    // Whether to emit robots nofollow for the site.
+    noFollow: false,
   },
   analytics: {
+    // Google Analytics 4 measurement ID (e.g. G-XXXXXXXXXX). Leave empty to disable.
     googleAnalyticsId: '',
+    // Umami analytics script URL. Leave empty to disable.
     umamiScriptUrl: 'https://umami.toshiki.dev/script.js',
+    // Umami website ID for this site.
     umamiWebsiteId: '2aeae228-582d-45ae-8d43-5f6dbf673339',
   },
-  imagekit: true,
-  staticBuild: {
-    maxPages: 50,
-    devRefreshMinutes: 45,
-  },
+  // Maximum Telegram snapshot pages to fetch during static sync.
+  maxPages: 50,
   mediaMirror: {
+    // Public URL prefix for mirrored media (e.g. /media => files under public/media).
     directory: '/media',
+    // User-Agent string used when fetching media from Telegram.
     userAgent: 'TelecastStaticSync/1.0',
   },
 }

@@ -3,13 +3,11 @@ import type { ChannelInfo } from '@/lib/types'
 import { redirect } from 'next/navigation'
 import { PageFrame } from '@/components/site/page-frame'
 import { TagWordCloud } from '@/components/site/tag-word-cloud'
-import { getAppConfig } from '@/lib/config'
 import { getLocaleMessages, localizePath } from '@/lib/i18n'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
 export async function renderTagsPage(locale: AppLocale) {
   const messages = getLocaleMessages(locale)
-  const config = getAppConfig()
   const snapshot = await getStaticSnapshot()
   const channel = snapshot.root as ChannelInfo
   const tagFrequency = new Map<string, number>()
@@ -32,15 +30,6 @@ export async function renderTagsPage(locale: AppLocale) {
         tagFrequency.set(normalizedTag, (tagFrequency.get(normalizedTag) || 0) + 1)
       }
     }
-  }
-
-  for (const tag of config.tags) {
-    const normalizedTag = tag.trim()
-    if (!normalizedTag || tagFrequency.has(normalizedTag)) {
-      continue
-    }
-
-    tagFrequency.set(normalizedTag, 1)
   }
 
   const cloudEntries = Array.from(tagFrequency.entries())

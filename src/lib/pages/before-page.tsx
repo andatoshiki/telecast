@@ -45,7 +45,6 @@ export async function renderBeforePage(locale: AppLocale, cursor: string) {
         channelTitle={channel.title}
         channelUsername={channelUsername}
         channelAvatar={channelAvatar}
-        commentsEnabled={config.commentsEnabled}
         olderHref={olderHref}
         newerHref={newerHref}
         uiLocale={locale}

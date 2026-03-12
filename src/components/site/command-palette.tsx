@@ -10,7 +10,6 @@ import {
   CornerUpLeft,
   Github,
   House,
-  Link2,
   Loader2,
   Rss,
   Search,
@@ -56,7 +55,6 @@ interface CommandPaletteProps {
   navItems: NavLink[]
   internalNavItems: NavLink[]
   customNavItems: NavLink[]
-  tags?: string[]
   locale: AppLocale
   messages: LocaleMessages
   triggerMode?: 'full' | 'icon'
@@ -148,9 +146,6 @@ function getNavIcon(href: string) {
   if (href === '/tags') {
     return <Tag className="h-4 w-4" />
   }
-  if (href === '/links') {
-    return <Link2 className="h-4 w-4" />
-  }
   return <Compass className="h-4 w-4" />
 }
 
@@ -175,7 +170,6 @@ export function CommandPalette({
   navItems,
   internalNavItems,
   customNavItems,
-  tags = [],
   locale,
   messages,
   triggerMode = 'full',
@@ -414,25 +408,6 @@ export function CommandPalette({
                       </CommandItem>
                     ))}
                   </CommandGroup>
-
-                  {tags.length > 0
-                    ? (
-                        <>
-                          <CommandSeparator />
-                          <CommandGroup heading={messages.nav.tags}>
-                            {tags.map(tag => (
-                              <CommandItem
-                                key={`tag-${tag}`}
-                                onSelect={() => openInternal(`/search?q=${encodeURIComponent(`#${tag}`)}`)}
-                              >
-                                <Tag className="h-4 w-4" />
-                                {tag}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </>
-                      )
-                    : null}
 
                   {internalNavItems.length > 0
                     ? (

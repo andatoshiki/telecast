@@ -27,12 +27,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const messages = getLocaleMessages(locale)
   const config = getAppConfig()
   const { seo } = config
-  const localTitle = seo.title || seo.ogTitle || messages.metadata.titleDefault
-  const localDescription = seo.description || seo.ogDescription || messages.metadata.description
+  const localTitle = seo.title || messages.metadata.titleDefault
+  const localDescription = seo.description || messages.metadata.description
   const siteUrl = config.siteUrl || 'https://example.com'
   const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
   const localizedHomePath = localizePath(resolvedLocale, '/')
-  const canonicalBase = (seo.canonical || config.siteUrl || siteUrl).replace(/\/+$/, '')
+  const canonicalBase = (config.siteUrl || siteUrl).replace(/\/+$/, '')
 
   return {
     title: {
@@ -44,17 +44,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       type: 'website',
       title: localTitle,
       description: localDescription,
-      siteName: seo.ogSiteName || localTitle,
+      siteName: localTitle,
       url: `${siteUrl}${localizedHomePath}`,
       ...(resolvedOgImage ? { images: [{ url: resolvedOgImage, width: 1200, height: 630, alt: localTitle }] } : {}),
     },
     twitter: {
-      card: seo.twitterCard || 'summary_large_image',
+      card: 'summary_large_image',
       title: localTitle,
       description: localDescription,
       ...(resolvedOgImage ? { images: [resolvedOgImage] } : {}),
-      ...(seo.twitterCreator ? { creator: seo.twitterCreator } : {}),
-      ...(seo.twitterSite ? { site: seo.twitterSite } : {}),
+      ...(config.twitter ? { creator: `@${config.twitter}` } : {}),
     },
     alternates: {
       canonical: `${canonicalBase}${localizedHomePath}`,

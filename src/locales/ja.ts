@@ -9,14 +9,12 @@ export const jaMessages: LocaleMessages = {
   nav: {
     home: 'ホーム',
     tags: 'タグ',
-    links: 'リンク',
     search: '検索',
     back: '戻る',
   },
   pageTitle: {
     home: 'ホーム',
     tags: 'タグ',
-    links: 'リンク',
     search: '検索',
     page: 'ページ',
   },
@@ -43,7 +41,6 @@ export const jaMessages: LocaleMessages = {
     older: '古い投稿',
     newer: '新しい投稿',
     edited: '編集済み',
-    discussion: 'ディスカッション',
     reactionsAndViewsAria: 'リアクションと閲覧数',
     viewCountTitle: 'Telegram の閲覧数',
     channelAvatarAlt: 'チャンネルのアバター',

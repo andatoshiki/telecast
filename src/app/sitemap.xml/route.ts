@@ -13,7 +13,6 @@ export async function GET() {
   const allPosts = snapshot.pages.flatMap(page => page.channel.posts)
   const localizedHomes = SUPPORTED_LOCALES.map(locale => `${siteUrl}${localizePath(locale, '/')}`)
   const localizedTags = SUPPORTED_LOCALES.map(locale => `${siteUrl}${localizePath(locale, '/tags')}`)
-  const localizedLinks = SUPPORTED_LOCALES.map(locale => `${siteUrl}${localizePath(locale, '/links')}`)
   const localizedPostUrls = SUPPORTED_LOCALES.flatMap(locale =>
     allPosts.map(post => ({
       url: `${siteUrl}${localizePath(locale, `/posts/${post.id}`)}`,
@@ -28,7 +27,6 @@ ${localizedPostUrls.map(post => `  <url><loc>${escapeXml(post.url)}</loc><lastmo
   <url><loc>${escapeXml(`${siteUrl}/rss.xml`)}</loc></url>
   <url><loc>${escapeXml(`${siteUrl}/rss.json`)}</loc></url>
 ${localizedTags.map(url => `  <url><loc>${escapeXml(url)}</loc></url>`).join('\n')}
-${localizedLinks.map(url => `  <url><loc>${escapeXml(url)}</loc></url>`).join('\n')}
 </urlset>`
 
   return new Response(xml, {

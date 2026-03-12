@@ -30,7 +30,6 @@ export default async function RootPage() {
         channelTitle={channel.title}
         channelUsername={channelUsername}
         channelAvatar={channelAvatar}
-        commentsEnabled={config.commentsEnabled}
         olderHref={olderHref}
         newerHref={null}
         uiLocale={locale}

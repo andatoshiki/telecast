@@ -123,23 +123,19 @@ Edit these keys in `SITE_CONSTANTS`:
 3. `siteUrl`
 4. `locale`
 5. `timezone`
-6. `commentsEnabled`
-7. `reactionsEnabled`
-8. `tags`, `links`, and `navs`
+6. `reactionsEnabled`
 
 ### 4.3: SEO and analytics constants
 
-1. `seo.title`, `seo.description`, `seo.ogImage`, `seo.canonical`.
-2. `seo.robots` and `seo.googleBot` fields.
-3. `analytics.googleAnalyticsId`.
-4. `analytics.umamiScriptUrl` and `analytics.umamiWebsiteId`.
+1. `seo.title`, `seo.description`, `seo.ogImage`, `seo.keywords`, and `seo.author`.
+2. `analytics.googleAnalyticsId`.
+3. `analytics.umamiScriptUrl` and `analytics.umamiWebsiteId`.
 
 ### 4.4: Static build and media constants
 
-1. `staticBuild.maxPages` controls crawl depth.
-2. `staticBuild.devRefreshMinutes` controls dev refresh window.
-3. `mediaMirror.directory` controls local media path.
-4. `mediaMirror.userAgent` controls fetch user agent.
+1. `maxPages` controls crawl depth.
+2. `mediaMirror.directory` controls local media path.
+3. `mediaMirror.userAgent` controls fetch user agent.
 
 ### 4.5: Example constants patch
 
@@ -150,12 +146,8 @@ export const SITE_CONSTANTS = {
   siteUrl: 'https://example.com',
   locale: 'en',
   timezone: 'UTC',
-  commentsEnabled: false,
   reactionsEnabled: true,
-  staticBuild: {
-    maxPages: 50,
-    devRefreshMinutes: 45,
-  },
+  maxPages: 50,
   mediaMirror: {
     directory: '/media',
     userAgent: 'TelecastStaticSync/1.0',
@@ -168,15 +160,12 @@ export const SITE_CONSTANTS = {
 ### 5.1: Base command
 
 ```bash
-pnpm sync:content --build
+pnpm sync
 ```
 
 ### 5.2: Available flags
 
-1. `--build`: build mode sync.
-2. `--dev`: dev mode sync.
-3. `--force`: bypass dev freshness skip.
-4. `--allow-empty`: allow empty remote snapshot output.
+1. `--og-image`: also generate `public/og-auto.png`.
 
 ### 5.3: Generated artifacts
 
@@ -184,11 +173,10 @@ pnpm sync:content --build
 2. `public/search/index.json`
 3. `public/media/*` files
 
-### 5.4: Freshness and fallback behavior
+### 5.4: Sync behavior
 
-1. Dev mode can skip sync when files are fresh.
-2. If remote fetch fails and an older snapshot exists, the script preserves previous generated data.
-3. If remote fetch fails and no previous snapshot exists, sync fails unless `--allow-empty` is set.
+1. Sync always fetches fresh remote content and rewrites generated snapshot and index files.
+2. If remote fetch returns no posts the sync exits with an error and does not write empty content.
 
 ## 6: Routing and public endpoints
 
@@ -200,7 +188,6 @@ pnpm sync:content --build
 4. `/{locale}/posts/{id}`
 5. `/{locale}/search`
 6. `/{locale}/tags`
-7. `/{locale}/links`
 
 ### 6.2: Metadata and feed routes
 
@@ -268,12 +255,12 @@ Use one GitHub Actions scheduled workflow to trigger both deploy hooks.
 
 1. Check network access to `telegramHost`.
 2. Verify channel visibility and accessibility.
-3. Run `pnpm sync:content --build` and inspect logs.
+3. Run `pnpm sync` and inspect logs.
 
 ### 9.2: Too few tags
 
-Tags are extracted from fetched posts and optional constants.
-If fetch fails, old snapshot data may keep tag count low.
+Tags are extracted only from fetched posts.
+If fetch fails sync exits with an error and generated content stays unchanged.
 
 ### 9.3: Robots route conflict
 

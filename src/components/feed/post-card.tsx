@@ -1,13 +1,12 @@
 import type { AppLocale } from '@/lib/i18n'
 import type { ChannelPost } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
-import { Eye, MessageCircle, Tag } from 'lucide-react'
+import { Eye, Tag } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { localizePath } from '@/lib/i18n'
 import { formatPostTimestamp } from '@/lib/time'
 import { AnimatedMetricNumber } from './animated-metric-number'
-import { TelegramComments } from './telegram-comments'
 
 interface PostCardProps {
   post: ChannelPost
@@ -17,7 +16,6 @@ interface PostCardProps {
   channelTitle?: string
   channelUsername?: string
   channelAvatar?: string
-  showComments?: boolean
   channelName?: string
   uiLocale: AppLocale
   messages: LocaleMessages
@@ -31,7 +29,6 @@ export function PostCard({
   channelTitle = '',
   channelUsername = '',
   channelAvatar = '',
-  showComments = false,
   channelName = '',
   uiLocale,
   messages,
@@ -151,17 +148,6 @@ export function PostCard({
               )
             : null}
 
-          {showComments && channelName && post.id
-            ? (
-                <div className="mt-4 border-t pt-3">
-                  <p className="mb-2 inline-flex items-center gap-2 text-sm text-muted-foreground">
-                    <MessageCircle className="h-4 w-4" />
-                    {messages.feed.discussion}
-                  </p>
-                  <TelegramComments channel={channelName} postId={post.id} />
-                </div>
-              )
-            : null}
         </div>
       </div>
     </article>

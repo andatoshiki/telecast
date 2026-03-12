@@ -1,5 +1,4 @@
 import type { AnalyticsConfig, SeoConfig } from './constant'
-import type { ExternalLink, NavLink } from './types'
 import { SITE_CONSTANTS } from './constant'
 
 const ABSOLUTE_URL_PATTERN = /^https?:\/\//i
@@ -12,21 +11,15 @@ export interface AppConfig {
   staticProxy: string
   telegramHost: string
   hideDescription: boolean
-  commentsEnabled: boolean
   reactionsEnabled: boolean
-  noIndex: boolean
-  noFollow: boolean
   website: string
   twitter: string
   github: string
   telegram: string
   mastodon: string
   bluesky: string
-  tags: string[]
-  links: ExternalLink[]
-  navs: NavLink[]
-  bannerHtml: string
-  footerOverride: string
+  customBanner: string
+  customFooter: string
   rssBeautify: boolean
   seo: SeoConfig
   analytics: AnalyticsConfig
@@ -105,21 +98,15 @@ export function getAppConfig(): AppConfig {
     staticProxy: normalizeStaticProxy(SITE_CONSTANTS.staticProxy),
     telegramHost: SITE_CONSTANTS.telegramHost,
     hideDescription: SITE_CONSTANTS.hideDescription,
-    commentsEnabled: SITE_CONSTANTS.commentsEnabled,
     reactionsEnabled: SITE_CONSTANTS.reactionsEnabled,
-    noIndex: SITE_CONSTANTS.noIndex,
-    noFollow: SITE_CONSTANTS.noFollow,
     website: SITE_CONSTANTS.website,
     twitter: SITE_CONSTANTS.twitter,
     github: SITE_CONSTANTS.github,
     telegram: SITE_CONSTANTS.telegram,
     mastodon: SITE_CONSTANTS.mastodon,
     bluesky: SITE_CONSTANTS.bluesky,
-    tags: SITE_CONSTANTS.tags,
-    links: SITE_CONSTANTS.links,
-    navs: SITE_CONSTANTS.navs,
-    bannerHtml: SITE_CONSTANTS.bannerHtml,
-    footerOverride: SITE_CONSTANTS.footerOverride,
+    customBanner: SITE_CONSTANTS.customBanner,
+    customFooter: SITE_CONSTANTS.customFooter,
     rssBeautify: SITE_CONSTANTS.rssBeautify,
     seo: SITE_CONSTANTS.seo,
     analytics: SITE_CONSTANTS.analytics,

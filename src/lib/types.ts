@@ -31,8 +31,3 @@ export interface NavLink {
   title: string
   href: string
 }
-
-export interface ExternalLink {
-  title: string
-  href: string
-}

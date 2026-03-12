@@ -36,7 +36,7 @@ export async function generatePostPageMetadata(locale: AppLocale, id: string): P
       title: postTitle,
       description: postDescription,
       url: postUrl,
-      siteName: seo.ogSiteName || seo.title || messages.metadata.titleDefault,
+      siteName: seo.title || messages.metadata.titleDefault,
       ...(post.datetime ? { publishedTime: post.datetime } : {}),
       ...(seo.author ? { authors: [seo.author] } : {}),
       ...(resolvedOgImage ? { images: [{ url: resolvedOgImage, width: 1200, height: 630 }] } : {}),
@@ -46,8 +46,7 @@ export async function generatePostPageMetadata(locale: AppLocale, id: string): P
       title: postTitle,
       description: postDescription,
       ...(resolvedOgImage ? { images: [resolvedOgImage] } : {}),
-      ...(seo.twitterCreator ? { creator: seo.twitterCreator } : {}),
-      ...(seo.twitterSite ? { site: seo.twitterSite } : {}),
+      ...(config.twitter ? { creator: `@${config.twitter}` } : {}),
     },
     alternates: {
       canonical: postUrl,
@@ -94,7 +93,7 @@ export async function renderPostPage(locale: AppLocale, id: string) {
     },
     'publisher': {
       '@type': 'Organization',
-      'name': seo.ogSiteName || 'Telecast',
+      'name': seo.title || 'Telecast',
       ...(resolvedOgImage ? { logo: { '@type': 'ImageObject', 'url': resolvedOgImage } } : {}),
     },
     ...(resolvedOgImage ? { image: resolvedOgImage } : {}),
@@ -122,10 +121,8 @@ export async function renderPostPage(locale: AppLocale, id: string) {
         channelTitle={channel.title}
         channelUsername={channelUsername}
         channelAvatar={channelAvatar}
-        commentsEnabled={config.commentsEnabled}
         showBefore={false}
         showAfter={false}
-        showComments
         uiLocale={locale}
         messages={messages}
       />
