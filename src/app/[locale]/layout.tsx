@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { notFound } from 'next/navigation'
 import type { AppLocale } from '@/lib/i18n'
+import { notFound } from 'next/navigation'
 import { getAppConfig } from '@/lib/config'
 import { getLocaleMessages, isAppLocale, localizePath, SUPPORTED_LOCALES } from '@/lib/i18n'
 import { resolveSeoImageUrl } from '@/lib/seo'
@@ -22,7 +22,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = (await params) ?? {}
-  const resolvedLocale: AppLocale = isAppLocale(locale || '') ? locale : 'en'
+  const localeValue = locale || ''
+  const resolvedLocale: AppLocale = isAppLocale(localeValue) ? localeValue : 'en'
   const messages = getLocaleMessages(locale)
   const config = getAppConfig()
   const { seo } = config
