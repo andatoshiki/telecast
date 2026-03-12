@@ -1,13 +1,5 @@
-import type { ChannelInfo } from '@/lib/types'
-import { redirect } from 'next/navigation'
-import { FeedList } from '@/components/feed/feed-list'
-import { PageFrame } from '@/components/site/page-frame'
-import { buildStaticProxyUrl, getAppConfig } from '@/lib/config'
-import { getLocaleMessages, localizePath, NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
-import {
-  getSnapshotPageIndexByBeforeCursor,
-  getSnapshotPaginationLinks,
-} from '@/lib/pagination/snapshot-pagination'
+import { NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
+import { renderBeforePage } from '@/lib/pages/before-page'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
 export const dynamic = 'force-static'
@@ -30,45 +22,5 @@ export async function generateStaticParams() {
 export default async function BeforePage({ params }: BeforePageProps) {
   const { locale: localeParam, cursor = '' } = (await params) ?? {}
   const locale = normalizeAppLocale(localeParam)
-  const messages = getLocaleMessages(locale)
-  const config = getAppConfig()
-  const snapshot = await getStaticSnapshot()
-  const pageIndex = getSnapshotPageIndexByBeforeCursor(snapshot.pages, cursor)
-
-  if (pageIndex < 0) {
-    redirect(localizePath(locale, '/'))
-  }
-
-  const channel = snapshot.pages[pageIndex]?.channel as ChannelInfo
-  const { olderHref, newerHref } = getSnapshotPaginationLinks(snapshot.pages, pageIndex, locale)
-  const channelAvatar = channel.avatar?.startsWith('http')
-    ? buildStaticProxyUrl(config.staticProxy, channel.avatar)
-    : (channel.avatar || '/favicon.svg')
-  const channelUsername = config.telegram || config.channel
-
-  return (
-    <PageFrame
-      channel={channel}
-      currentPath="/"
-      locale={locale}
-      messages={messages}
-      currentLocalePath={`/before/${cursor}`}
-      pageNumber={pageIndex + 1}
-    >
-      <FeedList
-        posts={channel.posts}
-        locale={locale}
-        timezone={config.timezone}
-        channelName={config.channel}
-        channelTitle={channel.title}
-        channelUsername={channelUsername}
-        channelAvatar={channelAvatar}
-        commentsEnabled={config.commentsEnabled}
-        olderHref={olderHref}
-        newerHref={newerHref}
-        uiLocale={locale}
-        messages={messages}
-      />
-    </PageFrame>
-  )
+  return renderBeforePage(locale, cursor)
 }

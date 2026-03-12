@@ -1,9 +1,5 @@
-import { redirect } from 'next/navigation'
-import { localizePath, NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
-import {
-  getSnapshotPageHref,
-  getSnapshotPageIndexByAfterCursor,
-} from '@/lib/pagination/snapshot-pagination'
+import { NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
+import { redirectAfterPage } from '@/lib/pages/after-page'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
 export const dynamic = 'force-static'
@@ -26,10 +22,5 @@ export async function generateStaticParams() {
 export default async function AfterPage({ params }: AfterPageProps) {
   const { cursor = '', locale: localeParam } = (await params) ?? {}
   const locale = normalizeAppLocale(localeParam)
-  const snapshot = await getStaticSnapshot()
-  const sourcePageIndex = getSnapshotPageIndexByAfterCursor(snapshot.pages, cursor)
-  const targetPageIndex = sourcePageIndex - 1
-  const targetHref = getSnapshotPageHref(snapshot.pages, targetPageIndex, locale) || localizePath(locale, '/')
-
-  redirect(targetHref)
+  return redirectAfterPage(locale, cursor)
 }

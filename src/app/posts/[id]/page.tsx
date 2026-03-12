@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
-import LocalePostPage, { generateMetadata as generateLocalePostMetadata } from '@/app/[locale]/posts/[id]/page'
 import { DEFAULT_LOCALE } from '@/lib/i18n'
+import { generatePostPageMetadata, renderPostPage } from '@/lib/pages/post-page'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
 export const dynamic = 'force-static'
@@ -19,20 +19,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: DefaultPostPageProps): Promise<Metadata> {
   const { id = '' } = (await params) ?? {}
-  return generateLocalePostMetadata({
-    params: Promise.resolve({
-      locale: DEFAULT_LOCALE,
-      id,
-    }),
-  })
+  return generatePostPageMetadata(DEFAULT_LOCALE, id)
 }
 
 export default async function DefaultPostPage({ params }: DefaultPostPageProps) {
   const { id = '' } = (await params) ?? {}
-  return LocalePostPage({
-    params: Promise.resolve({
-      locale: DEFAULT_LOCALE,
-      id,
-    }),
-  })
+  return renderPostPage(DEFAULT_LOCALE, id)
 }

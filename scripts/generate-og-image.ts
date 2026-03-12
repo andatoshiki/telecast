@@ -1,4 +1,5 @@
 import type { ChannelInfo } from '../src/lib/types'
+import { Buffer } from 'node:buffer'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
@@ -253,29 +254,7 @@ async function getAvatarHref(avatar: string) {
         return ''
       }
     }
-
-    try {
-      const response = await fetch(trimmed)
-      if (!response.ok) {
-        return await localMediaDataUri()
-      }
-
-      const contentType = response.headers.get('content-type') || ''
-      const mimeFromHeader = contentType.split(';')[0]?.trim().toLowerCase()
-      const extension = path.extname(new URL(trimmed).pathname).toLowerCase()
-      const mimeFromExtension = MIME_BY_EXTENSION[extension]
-      const mime = mimeFromHeader.startsWith('image/') ? mimeFromHeader : mimeFromExtension
-      if (!mime) {
-        return ''
-      }
-
-      const bytes = Buffer.from(await response.arrayBuffer())
-      const encoded = bytes.toString('base64')
-      return `data:${mime};base64,${encoded}`
-    }
-    catch {
-      return await localMediaDataUri()
-    }
+    return await localMediaDataUri()
   }
 
   if (!trimmed.startsWith('/')) {

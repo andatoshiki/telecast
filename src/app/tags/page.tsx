@@ -1,10 +1,8 @@
-import LocaleTagsPage from '@/app/[locale]/tags/page'
 import { DEFAULT_LOCALE } from '@/lib/i18n'
+import { renderTagsPage } from '@/lib/pages/tags-page'
 
 export const dynamic = 'force-static'
 
 export default async function DefaultTagsPage() {
-  return LocaleTagsPage({
-    params: Promise.resolve({ locale: DEFAULT_LOCALE }),
-  })
+  return renderTagsPage(DEFAULT_LOCALE)
 }

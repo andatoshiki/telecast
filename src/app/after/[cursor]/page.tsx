@@ -1,5 +1,5 @@
-import LocaleAfterPage from '@/app/[locale]/after/[cursor]/page'
 import { DEFAULT_LOCALE } from '@/lib/i18n'
+import { redirectAfterPage } from '@/lib/pages/after-page'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
 export const dynamic = 'force-static'
@@ -18,10 +18,5 @@ export async function generateStaticParams() {
 
 export default async function DefaultAfterPage({ params }: DefaultAfterPageProps) {
   const { cursor = '' } = (await params) ?? {}
-  return LocaleAfterPage({
-    params: Promise.resolve({
-      locale: DEFAULT_LOCALE,
-      cursor,
-    }),
-  })
+  return redirectAfterPage(DEFAULT_LOCALE, cursor)
 }
