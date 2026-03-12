@@ -3,6 +3,8 @@ import { getAppConfig } from '@/lib/config'
 import { SUPPORTED_LOCALES } from '@/lib/i18n'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
+export const dynamic = 'force-static'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const config = getAppConfig()
   const siteUrl = config.siteUrl || 'https://example.com'
