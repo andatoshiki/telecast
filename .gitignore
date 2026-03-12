@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+dist/
+.env
+.env.local
+pnpm-debug.log*
+public/media/*
+!public/media/.gitkeep
+public/search/.gitkeep
+!public/search/.gitkeep
+src/generated/
+docs
+og-auto.svg

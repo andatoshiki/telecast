@@ -1,0 +1,636 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+  }
+
+  a {
+    transition:
+      color 180ms ease,
+      opacity 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease,
+      background-size 220ms ease,
+      text-decoration-color 180ms ease;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply rounded-2xl border bg-card text-card-foreground shadow-none;
+  }
+
+  .link-smooth {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition:
+      color 180ms ease,
+      background-size 220ms ease;
+  }
+
+  .link-smooth:hover,
+  .link-smooth:focus-visible {
+    color: hsl(var(--primary));
+    background-size: 100% 1px;
+  }
+
+  .command-highlight {
+    @apply rounded-sm bg-primary/20 px-0.5 text-foreground;
+  }
+
+  .tag-cloud {
+    @apply flex flex-wrap items-center justify-center gap-x-4 gap-y-3 px-4 py-6;
+  }
+
+  .tag-cloud-item {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-size: var(--tag-size);
+    font-weight: 560;
+    line-height: 1.1;
+    transform: rotate(var(--tag-rotate));
+    opacity: var(--tag-opacity);
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    transition:
+      color 180ms ease,
+      transform 220ms ease,
+      opacity 180ms ease;
+  }
+
+  .tag-cloud-item:hover,
+  .tag-cloud-item:focus-visible {
+    opacity: 1;
+    color: hsl(var(--primary));
+    transform: rotate(0deg) scale(1.06);
+    outline: none;
+  }
+
+  .tag-cloud-label {
+    letter-spacing: 0.002em;
+  }
+
+  .tag-cloud-count {
+    font-size: 0.58em;
+    line-height: 1;
+    opacity: 0.72;
+    vertical-align: super;
+  }
+
+  .prose-telegram {
+    @apply text-[15px] leading-6 text-foreground;
+    word-break: break-word;
+  }
+
+  .prose-telegram :where(p, ul, ol, pre, blockquote, h1, h2, h3, h4) {
+    @apply my-3;
+  }
+
+  .prose-telegram :where(p:first-child, ul:first-child, ol:first-child, pre:first-child) {
+    @apply mt-0;
+  }
+
+  .prose-telegram :where(p:last-child, ul:last-child, ol:last-child, pre:last-child) {
+    @apply mb-0;
+  }
+
+  .prose-telegram a:not(.tgme_widget_message_link_preview) {
+    color: hsl(var(--primary));
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition:
+      color 180ms ease,
+      background-size 220ms ease;
+  }
+
+  .prose-telegram a:not(.tgme_widget_message_link_preview):hover,
+  .prose-telegram a:not(.tgme_widget_message_link_preview):focus-visible {
+    color: hsl(var(--foreground));
+    background-size: 100% 1px;
+  }
+
+  .prose-telegram img,
+  .prose-telegram video.post-video,
+  .prose-telegram iframe {
+    @apply my-3 h-auto max-w-full rounded-xl border;
+  }
+
+  /* Hide native post video immediately to prevent HTML5 -> DPlayer flicker. */
+  .prose-telegram video.post-video {
+    display: none !important;
+  }
+
+  .prose-telegram video.post-video.dplayer-fallback {
+    display: block !important;
+  }
+
+  .prose-telegram img.zoomable {
+    @apply mx-auto cursor-zoom-in;
+    width: 100%;
+    max-width: 100%;
+    transition:
+      filter 260ms ease,
+      opacity 260ms ease,
+      transform 260ms ease;
+    will-change: filter, opacity, transform;
+  }
+
+  .prose-telegram img.zoomable.image-loading {
+    filter: blur(16px);
+    opacity: 0.72;
+    transform: scale(1.02);
+  }
+
+  .prose-telegram img.zoomable.image-loaded {
+    filter: blur(0);
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prose-telegram img.zoomable {
+      transition: none;
+      will-change: auto;
+    }
+
+    .prose-telegram img.zoomable.image-loading {
+      filter: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .prose-telegram img.zoomable.image-loaded {
+      filter: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .prose-telegram .dplayer-host {
+    @apply my-3 overflow-hidden rounded-xl bg-card;
+    min-height: 200px;
+  }
+
+  @media (min-width: 640px) {
+    .prose-telegram .dplayer-host {
+      min-height: auto;
+    }
+  }
+
+  .prose-telegram .dplayer-host .dplayer,
+  .prose-telegram .dplayer-host .dplayer video {
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .prose-telegram .dplayer-host .dplayer video {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+  }
+
+  .prose-telegram video.dplayer-native-hidden {
+    display: none !important;
+  }
+
+  .prose-telegram pre {
+    @apply overflow-x-auto rounded-xl border bg-muted p-3 text-[13px];
+    white-space: pre-wrap;
+  }
+
+  .prose-telegram pre code[class*='language-'] {
+    @apply block font-mono text-[12.5px] leading-6 text-foreground;
+  }
+
+  .prose-telegram pre code .token.comment,
+  .prose-telegram pre code .token.prolog,
+  .prose-telegram pre code .token.doctype,
+  .prose-telegram pre code .token.cdata {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .prose-telegram pre code .token.punctuation {
+    color: hsl(var(--foreground) / 0.86);
+  }
+
+  .prose-telegram pre code .token.property,
+  .prose-telegram pre code .token.constant,
+  .prose-telegram pre code .token.symbol,
+  .prose-telegram pre code .token.number,
+  .prose-telegram pre code .token.boolean {
+    color: #0ea5e9;
+  }
+
+  .prose-telegram pre code .token.selector,
+  .prose-telegram pre code .token.attr-name,
+  .prose-telegram pre code .token.string,
+  .prose-telegram pre code .token.char,
+  .prose-telegram pre code .token.builtin,
+  .prose-telegram pre code .token.inserted {
+    color: #22c55e;
+  }
+
+  .prose-telegram pre code .token.operator,
+  .prose-telegram pre code .token.entity,
+  .prose-telegram pre code .token.url,
+  .prose-telegram pre code .token.atrule,
+  .prose-telegram pre code .token.attr-value,
+  .prose-telegram pre code .token.keyword {
+    color: #06b6d4;
+  }
+
+  .prose-telegram pre code .token.function,
+  .prose-telegram pre code .token.class-name {
+    color: #f59e0b;
+  }
+
+  .prose-telegram pre code .token.regex,
+  .prose-telegram pre code .token.important,
+  .prose-telegram pre code .token.variable {
+    color: #f97316;
+  }
+
+  .prose-telegram pre code .token.deleted,
+  .prose-telegram pre code .token.tag {
+    color: #ef4444;
+  }
+
+  .prose-telegram pre.code-copy-enabled {
+    position: relative;
+  }
+
+  .prose-telegram pre .code-copy-button {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.55rem;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.92);
+    color: hsl(var(--muted-foreground));
+    line-height: 0;
+    cursor: pointer;
+    perspective: 500px;
+    opacity: 0;
+    transform: translateY(-2px) scale(0.96);
+    pointer-events: none;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .prose-telegram pre:hover .code-copy-button,
+  .prose-telegram pre:focus-within .code-copy-button,
+  .prose-telegram pre .code-copy-button:focus-visible,
+  .prose-telegram pre .code-copy-button[data-copied='true'] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .prose-telegram pre .code-copy-button:hover,
+  .prose-telegram pre .code-copy-button:focus-visible {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--foreground) / 0.22);
+    outline: none;
+  }
+
+  .prose-telegram pre .code-copy-button .code-copy-icon {
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    transform-origin: center;
+    transition:
+      transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease,
+      color 180ms ease;
+  }
+
+  .prose-telegram pre .code-copy-button .code-copy-icon-copy {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+
+  .prose-telegram pre .code-copy-button .code-copy-icon-check {
+    opacity: 0;
+    transform: rotateY(-90deg) scale(0.82);
+    color: hsl(142 72% 42%);
+  }
+
+  .dark .prose-telegram pre .code-copy-button .code-copy-icon-check {
+    color: hsl(142 70% 52%);
+  }
+
+  .prose-telegram pre .code-copy-button[data-copied='true'] {
+    border-color: hsl(142 52% 44% / 0.5);
+  }
+
+  .prose-telegram pre .code-copy-button[data-copied='true'] .code-copy-icon-copy {
+    opacity: 0;
+    transform: rotateY(90deg) scale(0.82);
+  }
+
+  .prose-telegram pre .code-copy-button[data-copied='true'] .code-copy-icon-check {
+    opacity: 1;
+    transform: rotateY(0deg) scale(1);
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview {
+    @apply my-3 grid overflow-hidden rounded-2xl border bg-card text-card-foreground no-underline;
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.9rem 1rem 1rem 1.2rem;
+    row-gap: 0;
+    box-shadow: 0 0 0 1px hsl(var(--border) / 0.28) inset;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0.8rem;
+    bottom: 0.8rem;
+    width: 0.26rem;
+    border-radius: 999px;
+    background: hsl(var(--border) / 0.72);
+    transition: background-color 180ms ease;
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview,
+  .prose-telegram .tgme_widget_message_link_preview * {
+    text-decoration: none;
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview:hover {
+    border-color: hsl(var(--primary) / 0.32);
+    box-shadow: 0 0 0 1px hsl(var(--border) / 0.42) inset;
+    background-color: hsl(var(--card));
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview:hover::before {
+    background: hsl(var(--primary) / 0.55);
+  }
+
+  .avatar-rail {
+    width: 0.26rem;
+    border-radius: 999px;
+    background: hsl(var(--border) / 0.72);
+    transition: background-color 180ms ease;
+  }
+
+  .group-post:hover .avatar-rail {
+    background: hsl(var(--primary) / 0.55);
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview .link_preview_image {
+    @apply m-0 mt-3 block w-full rounded-xl border;
+    order: 4;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: center;
+    background: hsl(var(--muted));
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview .link_preview_site_name {
+    @apply m-0 text-[12px] font-semibold text-muted-foreground;
+    order: 1;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview .link_preview_title {
+    @apply m-0 mt-1 text-[15px] font-semibold leading-[1.4] text-primary;
+    order: 2;
+    transition:
+      color 180ms ease,
+      opacity 180ms ease;
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview:hover .link_preview_title {
+    color: hsl(var(--primary) / 0.82);
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview .link_preview_description {
+    @apply m-0 mt-2 text-[13px] leading-[1.58] text-muted-foreground;
+    order: 3;
+    white-space: pre-wrap;
+  }
+
+  .prose-telegram .tgme_widget_message_link_preview .link_preview_description:empty {
+    display: none;
+  }
+
+  @media (hover: none) {
+    .prose-telegram .tgme_widget_message_link_preview:hover {
+      border-color: hsl(var(--primary) / 0.32);
+      box-shadow: 0 0 0 1px hsl(var(--border) / 0.42) inset;
+      background-color: hsl(var(--card));
+    }
+  }
+
+  .prose-telegram blockquote {
+    @apply relative overflow-hidden rounded-xl border-l-[3px] border-border bg-muted/40 px-4 py-3 text-[15px] leading-7 text-foreground;
+  }
+
+  .prose-telegram blockquote::after {
+    content: '”';
+    position: absolute;
+    right: 0.55rem;
+    top: 0.2rem;
+    z-index: 0;
+    font-size: clamp(3.5rem, 6.7vw, 6rem);
+    font-weight: 700;
+    font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    line-height: 1;
+    color: hsl(var(--foreground) / 0.14);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .prose-telegram blockquote > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .prose-telegram blockquote small {
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  .prose-telegram .tg-expandable {
+    @apply rounded-r-md border-l-[3px] border-border bg-muted/40 px-3 py-2 text-sm;
+  }
+
+  .prose-telegram .reaction-list {
+    @apply mt-3 flex flex-wrap gap-2;
+  }
+
+  .prose-telegram .reaction-pill {
+    @apply inline-flex items-center gap-1 rounded-full border bg-muted px-2.5 py-1 text-xs text-muted-foreground;
+  }
+
+  .prose-telegram .reaction-pill-paid {
+    @apply border-border bg-secondary text-secondary-foreground;
+  }
+
+  .prose-telegram .tg-emoji {
+    width: 1.1em;
+    height: 1.1em;
+    vertical-align: -0.15em;
+  }
+
+  img.twemoji {
+    display: inline-block;
+    width: 1.08em;
+    height: 1.08em;
+    margin: 0 0.03em;
+    vertical-align: -0.16em;
+    object-fit: contain;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .prose-telegram img.twemoji {
+    width: 1.08em !important;
+    height: 1.08em !important;
+    max-width: none !important;
+    margin: 0 0.03em !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .prose-telegram .image-list-container {
+    @apply mx-auto grid grid-cols-2 gap-3;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .prose-telegram .image-list-container.image-list-masonry {
+    display: block;
+    columns: 2;
+    column-gap: 0.75rem;
+  }
+
+  .prose-telegram .image-list-container.image-list-masonry img.zoomable {
+    @apply mb-3;
+    width: 100%;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .prose-telegram .image-list-odd :first-child {
+    grid-column: 1 / span 2;
+  }
+
+  .prose-telegram .image-list-container img.zoomable {
+    @apply mx-0;
+    max-width: 100%;
+  }
+
+  .prose-telegram .spoiler-button input {
+    display: none;
+  }
+
+  .prose-telegram .spoiler-button tg-spoiler {
+    color: transparent;
+    @apply rounded-sm bg-muted;
+  }
+
+  .prose-telegram .spoiler-button input:checked + tg-spoiler {
+    color: inherit;
+    background: transparent;
+  }
+}

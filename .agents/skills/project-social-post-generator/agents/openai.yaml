@@ -1,0 +1,4 @@
+interface:
+  display_name: Project Social Post Generator
+  short_description: Craft Telegram and X posts from project scans
+  default_prompt: Use $project-social-post-generator to write a post from this repository.

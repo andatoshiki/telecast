@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        env:
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          BASE_URL="https://github.com/${REPO}/commit"
+          PREV_TAG=$(git describe --tags --abbrev=0 ${TAG}^ 2>/dev/null || echo "")
+          [[ -n "$PREV_TAG" ]] && RANGE="${PREV_TAG}..${TAG}" || RANGE="${TAG}"
+
+          get_type() {
+            echo "$1" | grep -oE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|release)[!(:]' | sed 's/[!(:]//' || echo "$1" | grep -oE '^[a-z]+:' | sed 's/://' || echo "other"
+          }
+          get_section() {
+            case "$1" in feat) echo "## Features" ;; fix) echo "## Bug Fixes" ;; docs) echo "## Documentation" ;; style) echo "## Style" ;; refactor) echo "## Refactors" ;; perf) echo "## Performance" ;; test) echo "## Tests" ;; build) echo "## Build" ;; ci) echo "## CI" ;; chore) echo "## Chore" ;; revert) echo "## Reverts" ;; release) echo "## Release" ;; *) echo "## Other" ;; esac
+          }
+
+          git log "$RANGE" --format="%H %s" --no-merges | while IFS= read -r line; do
+            hash="${line%% *}"
+            subject="${line#* }"
+            short_hash="${hash:0:7}"
+            type=$(get_type "$subject")
+            echo "${type}|${hash}|${short_hash}|${subject}"
+          done | sort -t'|' -k1,1 > /tmp/commits.txt
+
+          {
+            echo "#${TAG} Release"
+            echo ""
+            prev_section=""
+            while IFS='|' read -r type hash short_hash subject; do
+              section=$(get_section "$type")
+              if [[ "$section" != "$prev_section" ]]; then
+                echo ""
+                echo "$section"
+                echo ""
+                prev_section="$section"
+              fi
+              echo "- [\`${short_hash}\`](${BASE_URL}/${hash}): ${subject}"
+            done < /tmp/commits.txt
+          } > release-notes.md
+
+          [[ -s release-notes.md ]] || echo "#${TAG} Release" > release-notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release-notes.md
+          tag_name: ${{ github.ref_name }}
+          name: '#${{ github.ref_name }} Release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
