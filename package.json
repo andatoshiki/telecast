@@ -100,5 +100,10 @@
   },
   "simple-git-hooks": {
     "commit-msg": "pnpm commitlint --edit $1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "dplayer"
+    ]
   }
 }
