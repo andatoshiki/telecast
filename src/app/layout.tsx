@@ -47,7 +47,6 @@ export const metadata: Metadata = {
       'application/rss+xml': '/rss.xml',
     },
   },
-  ...(seo.themeColor ? { themeColor: seo.themeColor } : {}),
   robots: {
     index: seo.robots.index,
     follow: seo.robots.follow,

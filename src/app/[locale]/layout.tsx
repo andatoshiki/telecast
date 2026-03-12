@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import { getAppConfig } from '@/lib/config'
-import { getLocaleMessages, isAppLocale, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { getLocaleMessages, isAppLocale, localizePath, SUPPORTED_LOCALES } from '@/lib/i18n'
 import { resolveSeoImageUrl } from '@/lib/seo'
 
 interface LocaleLayoutProps {
@@ -21,6 +21,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = (await params) ?? {}
+  const resolvedLocale = isAppLocale(locale || '') ? locale : 'en'
   const messages = getLocaleMessages(locale)
   const config = getAppConfig()
   const { seo } = config
@@ -28,6 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const localDescription = seo.description || seo.ogDescription || messages.metadata.description
   const siteUrl = config.siteUrl || 'https://example.com'
   const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
+  const localizedHomePath = localizePath(resolvedLocale, '/')
+  const canonicalBase = (seo.canonical || config.siteUrl || siteUrl).replace(/\/+$/, '')
 
   return {
     title: {
@@ -40,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: localTitle,
       description: localDescription,
       siteName: seo.ogSiteName || localTitle,
-      url: `${siteUrl}/${locale}`,
+      url: `${siteUrl}${localizedHomePath}`,
       ...(resolvedOgImage ? { images: [{ url: resolvedOgImage, width: 1200, height: 630, alt: localTitle }] } : {}),
     },
     twitter: {
@@ -52,9 +55,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       ...(seo.twitterSite ? { site: seo.twitterSite } : {}),
     },
     alternates: {
-      canonical: `${seo.canonical || config.siteUrl}/${locale}`,
+      canonical: `${canonicalBase}${localizedHomePath}`,
       languages: {
-        en: '/en',
+        en: '/',
         ja: '/ja',
         zh: '/zh',
       },

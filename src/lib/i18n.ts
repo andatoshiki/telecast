@@ -48,8 +48,10 @@ export function getLocaleMessages(locale?: string | null): LocaleMessages {
 }
 
 export function localizePath(locale: AppLocale, path: string) {
+  const isDefaultLocale = locale === DEFAULT_LOCALE
+
   if (!path) {
-    return `/${locale}`
+    return isDefaultLocale ? '/' : `/${locale}`
   }
 
   if (EXTERNAL_URL_PATTERN.test(path) || path.startsWith('//')) {
@@ -59,11 +61,18 @@ export function localizePath(locale: AppLocale, path: string) {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
 
   if (normalizedPath === '/') {
-    return `/${locale}`
+    return isDefaultLocale ? '/' : `/${locale}`
   }
 
   const detectedLocale = getLocaleFromPath(normalizedPath)
   if (detectedLocale) {
+    if (isDefaultLocale && detectedLocale === DEFAULT_LOCALE) {
+      return stripLocalePrefix(normalizedPath)
+    }
+    return normalizedPath
+  }
+
+  if (isDefaultLocale) {
     return normalizedPath
   }
 

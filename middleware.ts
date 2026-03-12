@@ -15,6 +15,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  if (pathname === '/') {
+    return NextResponse.next()
+  }
+
   if (hasLocalePrefix(pathname)) {
     return NextResponse.next()
   }
@@ -24,7 +28,7 @@ export function middleware(request: NextRequest) {
     ? `/${DEFAULT_LOCALE}`
     : `/${DEFAULT_LOCALE}${pathname}`
 
-  return NextResponse.redirect(nextUrl)
+  return NextResponse.rewrite(nextUrl)
 }
 
 export const config = {

@@ -6,6 +6,7 @@ export interface StaticBuildConfig {
 }
 
 export interface MediaMirrorConfig {
+  directory: string
   userAgent: string
 }
 
@@ -35,7 +36,6 @@ export interface SeoConfig {
   twitterCreator: string
   twitterSite: string
   keywords: string[]
-  themeColor: string
   author: string
   canonical: string
   robots: RobotsConfig
@@ -73,6 +73,7 @@ export interface SiteConstantConfig {
   rssBeautify: boolean
   seo: SeoConfig
   analytics: AnalyticsConfig
+  imagekit: boolean
   staticBuild: StaticBuildConfig
   mediaMirror: MediaMirrorConfig
 }
@@ -126,7 +127,6 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
       'open source',
       'web development',
     ],
-    themeColor: '#ffffff',
     author: 'Anda Toshiki',
     canonical: 'https://tg.toshiki.dev',
     robots: {
@@ -146,11 +146,13 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
     umamiScriptUrl: 'https://umami.toshiki.dev/script.js',
     umamiWebsiteId: '2aeae228-582d-45ae-8d43-5f6dbf673339',
   },
+  imagekit: true,
   staticBuild: {
     maxPages: 50,
     devRefreshMinutes: 45,
   },
   mediaMirror: {
+    directory: '/media',
     userAgent: 'TelecastStaticSync/1.0',
   },
 }

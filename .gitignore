@@ -7,10 +7,11 @@ dist/
 pnpm-debug.log*
 public/media/*
 !public/media/.gitkeep
-public/search/.gitkeep
+public/search/*
 !public/search/.gitkeep
 src/generated/
 docs
-og-auto.svg
+og-auto.*
+public/og-auto.*
 .agent/
 .agents/

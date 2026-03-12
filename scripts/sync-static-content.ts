@@ -15,9 +15,26 @@ import {
   writeGeneratedStaticSnapshot,
 } from '../src/lib/telegram/static-snapshot'
 import { generateOgImageFromChannel } from './generate-og-image'
+import { buildImageKitMirror } from './imagekit-uploader'
 
 const SEARCH_INDEX_OUTPUT_PATH = path.resolve(process.cwd(), 'public/search/index.json')
-const MEDIA_OUTPUT_DIR = path.resolve(process.cwd(), `public${SITE_CONSTANTS.mediaMirror.directory}`)
+
+function normalizeMediaDirectory(value: string) {
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return '/media'
+  }
+
+  const withLeadingSlash = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+  if (withLeadingSlash.length > 1 && withLeadingSlash.endsWith('/')) {
+    return withLeadingSlash.slice(0, -1)
+  }
+
+  return withLeadingSlash
+}
+
+const MEDIA_DIRECTORY = normalizeMediaDirectory(SITE_CONSTANTS.mediaMirror.directory)
+const MEDIA_OUTPUT_DIR = path.resolve(process.cwd(), `public${MEDIA_DIRECTORY}`)
 
 const SUPPORTED_MEDIA_ATTRIBUTES: Array<[selector: string, attribute: string]> = [
   ['img[src]', 'src'],
@@ -41,6 +58,14 @@ const CONTENT_TYPE_EXTENSIONS = new Map<string, string>([
 ])
 
 const URL_IN_STYLE_PATTERN = /url\((['"]?)(.*?)\1\)/gi
+
+interface LocalMirrorStats {
+  provider: 'local'
+  resolvedCount: number
+  downloadedCount: number
+}
+
+type MirrorStats = LocalMirrorStats | Awaited<ReturnType<typeof buildImageKitMirror>> extends { getStats: () => infer S } ? S : never
 
 function hasHttpProtocol(value: string) {
   return /^https?:\/\//i.test(value)
@@ -98,7 +123,7 @@ function normalizeRemoteMediaUrl(input: string) {
     return ''
   }
 
-  if (normalized.startsWith(`${SITE_CONSTANTS.mediaMirror.directory}/`)) {
+  if (normalized.startsWith(`${MEDIA_DIRECTORY}/`)) {
     return normalized
   }
 
@@ -199,7 +224,7 @@ async function buildMediaMirror() {
       return rawValue
     }
 
-    if (normalizedUrl.startsWith(`${SITE_CONSTANTS.mediaMirror.directory}/`)) {
+    if (normalizedUrl.startsWith(`${MEDIA_DIRECTORY}/`)) {
       return normalizedUrl
     }
 
@@ -215,7 +240,7 @@ async function buildMediaMirror() {
         let outputPath = path.join(MEDIA_OUTPUT_DIR, fileName)
 
         if (await fileExists(outputPath)) {
-          return `${SITE_CONSTANTS.mediaMirror.directory}/${fileName}`
+          return `${MEDIA_DIRECTORY}/${fileName}`
         }
 
         const response = await fetch(normalizedUrl, {
@@ -239,7 +264,7 @@ async function buildMediaMirror() {
         }
 
         if (await fileExists(outputPath)) {
-          return `${SITE_CONSTANTS.mediaMirror.directory}/${fileName}`
+          return `${MEDIA_DIRECTORY}/${fileName}`
         }
 
         const bytes = await response.arrayBuffer()
@@ -249,7 +274,7 @@ async function buildMediaMirror() {
 
         await writeFile(outputPath, Buffer.from(bytes))
         downloadedCount += 1
-        return `${SITE_CONSTANTS.mediaMirror.directory}/${fileName}`
+        return `${MEDIA_DIRECTORY}/${fileName}`
       }
       catch {
         return rawValue
@@ -262,7 +287,7 @@ async function buildMediaMirror() {
 
   return {
     mirrorUrl,
-    getStats: () => ({ downloadedCount, resolvedCount: replacementCache.size }),
+    getStats: () => ({ provider: 'local' as const, downloadedCount, resolvedCount: replacementCache.size }),
   }
 }
 
@@ -324,7 +349,9 @@ function cloneSnapshot(snapshot: StaticSnapshot): StaticSnapshot {
 
 async function mirrorSnapshotAssets(snapshot: StaticSnapshot) {
   const mirrored = cloneSnapshot(snapshot)
-  const { mirrorUrl, getStats } = await buildMediaMirror()
+  const { mirrorUrl, getStats } = SITE_CONSTANTS.imagekit
+    ? await buildImageKitMirror()
+    : await buildMediaMirror()
 
   const channels: ChannelInfo[] = [mirrored.root, ...mirrored.pages.map(page => page.channel)]
 
@@ -348,7 +375,7 @@ async function mirrorSnapshotAssets(snapshot: StaticSnapshot) {
 
   return {
     snapshot: mirrored,
-    stats: getStats(),
+    stats: getStats() as MirrorStats,
   }
 }
 
@@ -425,7 +452,13 @@ async function run() {
       const ogResult = await generateOgImageFromChannel(mirroredPreviousSnapshot.root)
       console.info('[sync-static-content] Completed using existing snapshot.')
       console.info(`[sync-static-content] Pages: ${mirroredPreviousSnapshot.pages.length}, Posts: ${mirroredPreviousSnapshot.postIds.length}`)
-      console.info(`[sync-static-content] Mirrored media URLs: ${stats.resolvedCount}, New downloads: ${stats.downloadedCount}`)
+      if (stats.provider === 'imagekit') {
+        console.info(`[sync-static-content] Media URLs processed: ${stats.resolvedCount}, Uploaded to ImageKit: ${stats.uploadedCount}`)
+        console.info(`[sync-static-content] ImageKit endpoint: ${stats.imageKitEndpoint}, Force WebP: ${stats.forceWebp ? 'yes' : 'no'}`)
+      }
+      else {
+        console.info(`[sync-static-content] Mirrored media URLs: ${stats.resolvedCount}, New downloads: ${stats.downloadedCount}`)
+      }
       console.info(`[sync-static-content] OG image: ${ogResult.relativePath} (avatar: ${ogResult.usedAvatar ? 'yes' : 'no'})`)
       return
     }
@@ -437,7 +470,9 @@ async function run() {
     )
   }
 
-  console.info('[sync-static-content] Mirroring media locally...')
+  console.info(SITE_CONSTANTS.imagekit
+    ? '[sync-static-content] Uploading media to ImageKit...'
+    : '[sync-static-content] Mirroring media locally...')
   const { snapshot: mirroredSnapshot, stats } = await mirrorSnapshotAssets(remoteSnapshot)
 
   await writeGeneratedStaticSnapshot(mirroredSnapshot)
@@ -446,7 +481,13 @@ async function run() {
 
   console.info('[sync-static-content] Completed.')
   console.info(`[sync-static-content] Pages: ${mirroredSnapshot.pages.length}, Posts: ${mirroredSnapshot.postIds.length}`)
-  console.info(`[sync-static-content] Mirrored media URLs: ${stats.resolvedCount}, New downloads: ${stats.downloadedCount}`)
+  if (stats.provider === 'imagekit') {
+    console.info(`[sync-static-content] Media URLs processed: ${stats.resolvedCount}, Uploaded to ImageKit: ${stats.uploadedCount}`)
+    console.info(`[sync-static-content] ImageKit endpoint: ${stats.imageKitEndpoint}, Force WebP: ${stats.forceWebp ? 'yes' : 'no'}`)
+  }
+  else {
+    console.info(`[sync-static-content] Mirrored media URLs: ${stats.resolvedCount}, New downloads: ${stats.downloadedCount}`)
+  }
   console.info(`[sync-static-content] OG image: ${ogResult.relativePath} (avatar: ${ogResult.usedAvatar ? 'yes' : 'no'})`)
 
   const snapshotPath = getGeneratedStaticSnapshotPath()
