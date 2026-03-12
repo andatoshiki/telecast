@@ -19,16 +19,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  if (pathname === `/${DEFAULT_LOCALE}`) {
+    const nextUrl = request.nextUrl.clone()
+    nextUrl.pathname = '/'
+    return NextResponse.redirect(nextUrl)
+  }
+
+  if (pathname.startsWith(`/${DEFAULT_LOCALE}/`)) {
+    const nextUrl = request.nextUrl.clone()
+    const stripped = pathname.replace(new RegExp(`^/${DEFAULT_LOCALE}`), '') || '/'
+    nextUrl.pathname = stripped.startsWith('/') ? stripped : `/${stripped}`
+    return NextResponse.redirect(nextUrl)
+  }
+
   if (hasLocalePrefix(pathname)) {
     return NextResponse.next()
   }
 
-  const nextUrl = request.nextUrl.clone()
-  nextUrl.pathname = pathname === '/'
-    ? `/${DEFAULT_LOCALE}`
-    : `/${DEFAULT_LOCALE}${pathname}`
-
-  return NextResponse.rewrite(nextUrl)
+  return NextResponse.next()
 }
 
 export const config = {

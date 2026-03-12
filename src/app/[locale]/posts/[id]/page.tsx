@@ -5,7 +5,7 @@ import { FeedList } from '@/components/feed/feed-list'
 import { JsonLd } from '@/components/site/json-ld'
 import { PageFrame } from '@/components/site/page-frame'
 import { buildStaticProxyUrl, getAppConfig } from '@/lib/config'
-import { getLocaleMessages, normalizeAppLocale, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { getLocaleMessages, localizePath, NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
 import { resolveSeoImageUrl } from '@/lib/seo'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
@@ -21,7 +21,7 @@ interface PostPageProps {
 
 export async function generateStaticParams() {
   const snapshot = await getStaticSnapshot()
-  return SUPPORTED_LOCALES.flatMap(locale =>
+  return NON_DEFAULT_LOCALES.flatMap(locale =>
     snapshot.postIds.map(id => ({ locale, id })),
   )
 }
@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const postDescription = post.text?.slice(0, 160) || seo.description || messages.metadata.description
   const siteUrl = config.siteUrl || 'https://example.com'
   const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
-  const postUrl = `${siteUrl}/${locale}/posts/${id}`
+  const postUrl = `${siteUrl}${localizePath(locale, `/posts/${id}`)}`
 
   return {
     title: postTitle,
@@ -107,7 +107,7 @@ export default async function PostPage({ params }: PostPageProps) {
     'headline': post.title || post.text?.slice(0, 110) || `Post ${id}`,
     'datePublished': post.datetime || undefined,
     'dateModified': post.edited ? undefined : post.datetime || undefined,
-    'url': `${siteUrl}/${locale}/posts/${id}`,
+    'url': `${siteUrl}${localizePath(locale, `/posts/${id}`)}`,
     'author': {
       '@type': 'Person',
       'name': seo.author || 'Unknown',
@@ -120,7 +120,7 @@ export default async function PostPage({ params }: PostPageProps) {
     ...(resolvedOgImage ? { image: resolvedOgImage } : {}),
     'mainEntityOfPage': {
       '@type': 'WebPage',
-      '@id': `${siteUrl}/${locale}/posts/${id}`,
+      '@id': `${siteUrl}${localizePath(locale, `/posts/${id}`)}`,
     },
   }
 

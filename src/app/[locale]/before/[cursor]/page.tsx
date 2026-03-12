@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { FeedList } from '@/components/feed/feed-list'
 import { PageFrame } from '@/components/site/page-frame'
 import { buildStaticProxyUrl, getAppConfig } from '@/lib/config'
-import { getLocaleMessages, localizePath, normalizeAppLocale, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { getLocaleMessages, localizePath, NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
 import {
   getSnapshotPageIndexByBeforeCursor,
   getSnapshotPaginationLinks,
@@ -22,7 +22,7 @@ interface BeforePageProps {
 
 export async function generateStaticParams() {
   const snapshot = await getStaticSnapshot()
-  return SUPPORTED_LOCALES.flatMap(locale =>
+  return NON_DEFAULT_LOCALES.flatMap(locale =>
     snapshot.beforeCursors.map(cursor => ({ locale, cursor })),
   )
 }

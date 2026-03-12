@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { localizePath, normalizeAppLocale, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { localizePath, NON_DEFAULT_LOCALES, normalizeAppLocale } from '@/lib/i18n'
 import {
   getSnapshotPageHref,
   getSnapshotPageIndexByAfterCursor,
@@ -18,7 +18,7 @@ interface AfterPageProps {
 
 export async function generateStaticParams() {
   const snapshot = await getStaticSnapshot()
-  return SUPPORTED_LOCALES.flatMap(locale =>
+  return NON_DEFAULT_LOCALES.flatMap(locale =>
     snapshot.afterCursors.map(cursor => ({ locale, cursor })),
   )
 }

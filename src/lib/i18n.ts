@@ -8,6 +8,7 @@ export const SUPPORTED_LOCALES = ['en', 'ja', 'zh'] as const
 export type AppLocale = (typeof SUPPORTED_LOCALES)[number]
 
 export const DEFAULT_LOCALE: AppLocale = 'en'
+export const NON_DEFAULT_LOCALES = SUPPORTED_LOCALES.filter(locale => locale !== DEFAULT_LOCALE) as Exclude<AppLocale, typeof DEFAULT_LOCALE>[]
 
 const EXTERNAL_URL_PATTERN = /^[a-z][a-z\d+\-.]*:/i
 

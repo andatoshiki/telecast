@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import type { AppLocale } from '@/lib/i18n'
 import { notFound } from 'next/navigation'
 import { getAppConfig } from '@/lib/config'
-import { getLocaleMessages, isAppLocale, localizePath, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { getLocaleMessages, isAppLocale, localizePath, NON_DEFAULT_LOCALES } from '@/lib/i18n'
 import { resolveSeoImageUrl } from '@/lib/seo'
 
 interface LocaleLayoutProps {
@@ -17,7 +17,7 @@ export const dynamic = 'force-static'
 export const dynamicParams = false
 
 export async function generateStaticParams() {
-  return SUPPORTED_LOCALES.map(locale => ({ locale }))
+  return NON_DEFAULT_LOCALES.map(locale => ({ locale }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
