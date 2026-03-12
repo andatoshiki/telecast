@@ -146,7 +146,7 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
     umamiScriptUrl: 'https://umami.toshiki.dev/script.js',
     umamiWebsiteId: '2aeae228-582d-45ae-8d43-5f6dbf673339',
   },
-  imagekit: false,
+  imagekit: true,
   staticBuild: {
     maxPages: 50,
     devRefreshMinutes: 45,
