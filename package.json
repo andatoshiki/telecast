@@ -41,7 +41,7 @@
   "scripts": {
     "dev": "pnpm sync && pnpm dev:next",
     "dev:next": "next dev -p 4321",
-    "build": "next build --webpack",
+    "build": "pnpm sync && next build --webpack",
     "start": "next start -p 4321",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
