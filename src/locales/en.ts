@@ -123,7 +123,7 @@ export const enMessages: LocaleMessages = {
   sidebar: {
     telegramFeed: 'Telegram feed',
     command: 'Command',
-    language: 'Language',
+    language: 'Languages',
   },
   localeNames: {
     en: 'English',
