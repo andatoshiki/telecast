@@ -5,7 +5,7 @@ import process from 'node:process'
 
 const OG_WIDTH = 1200
 const OG_HEIGHT = 630
-const OUTPUT_RELATIVE_PATH = 'public/og-auto.svg'
+const OUTPUT_RELATIVE_PATH = 'public/og-auto.png'
 const CARD_X = 40
 const CARD_Y = 40
 const CARD_WIDTH = 1120
@@ -232,10 +232,32 @@ async function getAvatarHref(avatar: string) {
   }
 
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    const localMediaDataUri = async () => {
+      try {
+        const fileName = path.basename(new URL(trimmed).pathname)
+        if (!fileName) {
+          return ''
+        }
+
+        const localPath = path.resolve(process.cwd(), 'public/media', fileName)
+        const bytes = await readFile(localPath)
+        const extension = path.extname(localPath).toLowerCase()
+        const mime = MIME_BY_EXTENSION[extension]
+        if (!mime) {
+          return ''
+        }
+
+        return `data:${mime};base64,${bytes.toString('base64')}`
+      }
+      catch {
+        return ''
+      }
+    }
+
     try {
       const response = await fetch(trimmed)
       if (!response.ok) {
-        return ''
+        return await localMediaDataUri()
       }
 
       const contentType = response.headers.get('content-type') || ''
@@ -252,7 +274,7 @@ async function getAvatarHref(avatar: string) {
       return `data:${mime};base64,${encoded}`
     }
     catch {
-      return ''
+      return await localMediaDataUri()
     }
   }
 
@@ -363,11 +385,11 @@ function buildSvg(args: {
 
   ${hasAvatar
     ? `
-  <circle cx="${avatarCenterX}" cy="${avatarCenterY}" r="${avatarRadius}" fill="${SHADCN_COLORS.avatarFallback}" stroke="${SHADCN_COLORS.border}" />
+  <circle cx="${avatarCenterX}" cy="${avatarCenterY}" r="${avatarRadius}" fill="${SHADCN_COLORS.avatarFallback}" stroke="#000000" stroke-width="6" />
   <image href="${safeAvatarHref}" x="${avatarX + 4}" y="${avatarY + 4}" width="${avatarSize - 8}" height="${avatarSize - 8}" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatarClip)" />
 `
     : `
-  <circle cx="${avatarCenterX}" cy="${avatarCenterY}" r="${avatarRadius}" fill="${SHADCN_COLORS.avatarFallback}" stroke="${SHADCN_COLORS.border}" />
+  <circle cx="${avatarCenterX}" cy="${avatarCenterY}" r="${avatarRadius}" fill="${SHADCN_COLORS.avatarFallback}" stroke="#000000" stroke-width="6" />
   <text x="${avatarCenterX - 23}" y="${avatarCenterY + 12}" fill="${SHADCN_COLORS.mutedForeground}" font-size="48" font-weight="600" font-family="${APPLE_SF_FONT_STACK}">@</text>
 `}
 
@@ -402,11 +424,16 @@ export async function generateOgImageFromChannel(channel: ChannelInfo) {
 
   const outputPath = path.resolve(process.cwd(), OUTPUT_RELATIVE_PATH)
   await mkdir(path.dirname(outputPath), { recursive: true })
-  await writeFile(outputPath, svg, 'utf8')
+
+  const { default: sharp } = await import('sharp')
+  const pngBytes = await sharp(Buffer.from(svg, 'utf8'))
+    .png({ quality: 100, compressionLevel: 9 })
+    .toBuffer()
+  await writeFile(outputPath, pngBytes)
 
   return {
     outputPath,
-    relativePath: '/og-auto.svg',
+    relativePath: '/og-auto.png',
     usedAvatar: Boolean(avatarHref),
     titleLength: title.length,
     descriptionLength: description.length,

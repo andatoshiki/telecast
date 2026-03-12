@@ -6,7 +6,6 @@ export interface StaticBuildConfig {
 }
 
 export interface MediaMirrorConfig {
-  directory: string
   userAgent: string
 }
 
@@ -84,7 +83,7 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
   timezone: 'UTC',
   siteUrl: 'https://tg.toshiki.dev',
   telegramHost: 't.me',
-  // Keep empty for full-static media mirroring. The sync script rewrites to /media/*.
+  // Keep empty unless you need a runtime proxy for Telegram-origin media URLs.
   staticProxy: '',
   hideDescription: false,
   commentsEnabled: false,
@@ -107,7 +106,7 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
   seo: {
     title: 'Telecast – Anda Toshiki',
     description: 'Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!',
-    ogImage: '/og-auto.svg',
+    ogImage: '/og-auto.png',
     ogTitle: 'Telecast – Anda Toshiki',
     ogDescription: 'Tech notes, development logs, and microblog posts by Anda Toshiki.',
     ogUrl: 'https://tg.toshiki.dev',
@@ -152,7 +151,6 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
     devRefreshMinutes: 45,
   },
   mediaMirror: {
-    directory: '/media',
     userAgent: 'TelecastStaticSync/1.0',
   },
 }
