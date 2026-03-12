@@ -232,7 +232,28 @@ async function getAvatarHref(avatar: string) {
   }
 
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    return trimmed
+    try {
+      const response = await fetch(trimmed)
+      if (!response.ok) {
+        return ''
+      }
+
+      const contentType = response.headers.get('content-type') || ''
+      const mimeFromHeader = contentType.split(';')[0]?.trim().toLowerCase()
+      const extension = path.extname(new URL(trimmed).pathname).toLowerCase()
+      const mimeFromExtension = MIME_BY_EXTENSION[extension]
+      const mime = mimeFromHeader.startsWith('image/') ? mimeFromHeader : mimeFromExtension
+      if (!mime) {
+        return ''
+      }
+
+      const bytes = Buffer.from(await response.arrayBuffer())
+      const encoded = bytes.toString('base64')
+      return `data:${mime};base64,${encoded}`
+    }
+    catch {
+      return ''
+    }
   }
 
   if (!trimmed.startsWith('/')) {
