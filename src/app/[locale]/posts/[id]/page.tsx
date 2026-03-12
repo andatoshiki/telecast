@@ -6,6 +6,7 @@ import { JsonLd } from '@/components/site/json-ld'
 import { PageFrame } from '@/components/site/page-frame'
 import { buildStaticProxyUrl, getAppConfig } from '@/lib/config'
 import { getLocaleMessages, normalizeAppLocale, SUPPORTED_LOCALES } from '@/lib/i18n'
+import { resolveSeoImageUrl } from '@/lib/seo'
 import { getStaticSnapshot } from '@/lib/telegram/static-snapshot'
 
 export const dynamic = 'force-static'
@@ -42,6 +43,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const postTitle = post.title || post.text?.slice(0, 80) || `Post ${id}`
   const postDescription = post.text?.slice(0, 160) || seo.description || messages.metadata.description
   const siteUrl = config.siteUrl || 'https://example.com'
+  const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
   const postUrl = `${siteUrl}/${locale}/posts/${id}`
 
   return {
@@ -55,13 +57,15 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       siteName: seo.ogSiteName || seo.title || messages.metadata.titleDefault,
       ...(post.datetime ? { publishedTime: post.datetime } : {}),
       ...(seo.author ? { authors: [seo.author] } : {}),
-      ...(seo.ogImage ? { images: [{ url: seo.ogImage, width: 1200, height: 630 }] } : {}),
+      ...(resolvedOgImage ? { images: [{ url: resolvedOgImage, width: 1200, height: 630 }] } : {}),
     },
     twitter: {
       card: 'summary_large_image',
       title: postTitle,
       description: postDescription,
+      ...(resolvedOgImage ? { images: [resolvedOgImage] } : {}),
       ...(seo.twitterCreator ? { creator: seo.twitterCreator } : {}),
+      ...(seo.twitterSite ? { site: seo.twitterSite } : {}),
     },
     alternates: {
       canonical: postUrl,
@@ -95,6 +99,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const siteUrl = config.siteUrl || 'https://example.com'
   const { seo } = config
+  const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
 
   const blogPostingJsonLd = {
     '@context': 'https://schema.org',
@@ -110,9 +115,9 @@ export default async function PostPage({ params }: PostPageProps) {
     'publisher': {
       '@type': 'Organization',
       'name': seo.ogSiteName || 'Telecast',
-      ...(seo.ogImage ? { logo: { '@type': 'ImageObject', 'url': `${siteUrl}${seo.ogImage}` } } : {}),
+      ...(resolvedOgImage ? { logo: { '@type': 'ImageObject', 'url': resolvedOgImage } } : {}),
     },
-    ...(seo.ogImage ? { image: `${siteUrl}${seo.ogImage}` } : {}),
+    ...(resolvedOgImage ? { image: resolvedOgImage } : {}),
     'mainEntityOfPage': {
       '@type': 'WebPage',
       '@id': `${siteUrl}/${locale}/posts/${id}`,
