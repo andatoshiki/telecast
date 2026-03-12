@@ -3,6 +3,7 @@ import Script from 'next/script'
 import { JsonLd } from '@/components/site/json-ld'
 import { ThemeProvider } from '@/components/site/theme-provider'
 import { getAppConfig } from '@/lib/config'
+import { resolveSeoImageUrl } from '@/lib/seo'
 import { enMessages } from '@/locales/en'
 import './globals.css'
 
@@ -12,6 +13,7 @@ const { seo, analytics } = config
 const siteUrl = config.siteUrl || 'https://example.com'
 const defaultTitle = seo.title || seo.ogTitle || enMessages.metadata.titleDefault
 const defaultDescription = seo.description || seo.ogDescription || enMessages.metadata.description
+const resolvedOgImage = resolveSeoImageUrl(siteUrl, seo.ogImage)
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -29,13 +31,13 @@ export const metadata: Metadata = {
     title: seo.ogTitle || defaultTitle,
     description: seo.ogDescription || defaultDescription,
     url: seo.ogUrl || seo.canonical || siteUrl,
-    ...(seo.ogImage ? { images: [{ url: seo.ogImage, width: 1200, height: 630, alt: defaultTitle }] } : {}),
+    ...(resolvedOgImage ? { images: [{ url: resolvedOgImage, width: 1200, height: 630, alt: defaultTitle }] } : {}),
   },
   twitter: {
     card: seo.twitterCard || 'summary_large_image',
     title: seo.ogTitle || defaultTitle,
     description: seo.ogDescription || defaultDescription,
-    ...(seo.ogImage ? { images: [seo.ogImage] } : {}),
+    ...(resolvedOgImage ? { images: [resolvedOgImage] } : {}),
     ...(seo.twitterCreator ? { creator: seo.twitterCreator } : config.twitter ? { creator: `@${config.twitter}` } : {}),
     ...(seo.twitterSite ? { site: seo.twitterSite } : {}),
   },
@@ -74,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               '@type': 'Person',
               'name': seo.author || 'Unknown',
             },
-            ...(seo.ogImage ? { image: `${siteUrl}${seo.ogImage}` } : {}),
+            ...(resolvedOgImage ? { image: resolvedOgImage } : {}),
           }}
         />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
