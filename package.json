@@ -42,7 +42,7 @@
     "predev": "pnpm sync:content --dev --force",
     "dev": "next dev -p 4321",
     "prebuild": "pnpm sync:content --build",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start -p 4321",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
