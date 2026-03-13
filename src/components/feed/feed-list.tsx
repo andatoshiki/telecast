@@ -4,6 +4,7 @@ import type { LocaleMessages } from '@/locales/en'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { localizePath } from '@/lib/i18n'
+import { AnimatedFeedContainer } from './animated-feed'
 import { PostCard } from './post-card'
 
 interface FeedListProps {
@@ -49,7 +50,7 @@ export function FeedList({
   const hasPagination = !!(resolvedOlderHref || resolvedNewerHref)
 
   return (
-    <div className={hasPagination ? undefined : '[&>article:last-child]:border-b-0'}>
+    <AnimatedFeedContainer className={hasPagination ? undefined : '[&>article:last-child]:border-b-0'}>
       {posts.map((post, index) => (
         <PostCard
           key={post.id}
@@ -91,6 +92,6 @@ export function FeedList({
             : null}
         </div>
       )}
-    </div>
+    </AnimatedFeedContainer>
   )
 }

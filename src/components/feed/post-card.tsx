@@ -1,11 +1,15 @@
+'use client'
+
 import type { AppLocale } from '@/lib/i18n'
 import type { ChannelPost } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
 import { Eye, Tag } from 'lucide-react'
+import { motion } from 'motion/react'
 import { Badge } from '@/components/ui/badge'
 import { localizePath } from '@/lib/i18n'
 import { formatPostTimestamp } from '@/lib/time'
 import { AnimatedMetricNumber } from './animated-metric-number'
+import { feedItemVariants } from './animated-feed'
 
 interface PostCardProps {
   post: ChannelPost
@@ -32,7 +36,6 @@ export function PostCard({
   uiLocale,
   messages,
 }: PostCardProps) {
-  const delay = Math.min(index * 45, 270)
   const formattedTime = formatPostTimestamp(post.datetime, locale, timezone)
   const displayName = channelTitle.trim() || channelName
   const username = (channelUsername || channelName).replace(/^@/, '').trim()
@@ -42,9 +45,9 @@ export function PostCard({
     : messages.feed.channelAvatarAlt
 
   return (
-    <article
-      className="group-post animate-fade-up border-b px-4 py-4 transition-colors hover:bg-muted/30"
-      style={{ animationDelay: `${delay}ms` }}
+    <motion.article
+      variants={feedItemVariants}
+      className="group-post border-b px-4 py-4 transition-colors hover:bg-muted/30"
       data-twemoji-scope
     >
       <div className="flex items-stretch gap-3">
@@ -149,6 +152,6 @@ export function PostCard({
 
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
