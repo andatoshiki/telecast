@@ -45,7 +45,7 @@ jobs:
           done | sort -t'|' -k1,1 > /tmp/commits.txt
 
           {
-            echo "#${TAG} Release"
+            echo "# ${TAG} Release"
             echo ""
             prev_section=""
             while IFS='|' read -r type hash short_hash subject; do
