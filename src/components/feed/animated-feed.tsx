@@ -22,7 +22,7 @@ export const feedItemVariants = {
     y: 0,
     filter: 'blur(0px)',
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 260,
       damping: 28,
     },
