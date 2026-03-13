@@ -305,4 +305,4 @@ This project is licensed under AGPL-3.0.
 
 # 12: Page Speed Insights and SEO
 
-![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@main/.github/assets/pagespeed-metrics.svg)
+![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@master/.github/assets/pagespeed-metrics.svg)

@@ -318,4 +318,4 @@ pnpm sync:content --build
 
 # 12: 页面速度分析与 SEO
 
-![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@main/.github/assets/pagespeed-metrics.svg)
+![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@master/.github/assets/pagespeed-metrics.svg)
