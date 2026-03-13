@@ -2,6 +2,8 @@
 
 > 一个独立的 Next.js 微博客应用，可将 Telegram 频道内容镜像为静态快照页面，并支持搜索、标签、RSS 与媒体本地化。
 
+[English](./readme.md)
+
 ## 1: 产品概述
 
 ### 1.1: 应用定位
@@ -313,3 +315,7 @@ pnpm sync:content --build
 ### 11.1: 许可证说明
 
 本项目采用 AGPL-3.0 许可证。
+
+# 12: 页面速度分析与 SEO
+
+![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@main/.github/assets/pagespeed-metrics.svg)
