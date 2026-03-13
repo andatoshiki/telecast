@@ -163,31 +163,37 @@ export function PageFrame({
                 : null}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className={cn(sidebarIconButtonClass, isHomeActive && sidebarIconActiveClass)}
+                  <Link
+                    href={localizePath(resolvedLocale, '/')}
+                    aria-label={resolvedMessages.nav.home}
+                    className={cn(
+                      'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      sidebarIconButtonClass,
+                      isHomeActive && sidebarIconActiveClass,
+                    )}
+                    prefetch
                   >
-                    <Link href={localizePath(resolvedLocale, '/')} aria-label={resolvedMessages.nav.home} prefetch>
-                      <House className={cn(sidebarIconGlyphClass, isHomeActive ? 'fill-current' : 'fill-none')} />
-                      <span className="sr-only">{resolvedMessages.nav.home}</span>
-                    </Link>
-                  </Button>
+                    <House className={cn(sidebarIconGlyphClass, isHomeActive ? 'fill-current' : 'fill-none')} />
+                    <span className="sr-only">{resolvedMessages.nav.home}</span>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">{resolvedMessages.nav.home}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className={cn(sidebarIconButtonClass, isTagsActive && sidebarIconActiveClass)}
+                  <Link
+                    href={localizePath(resolvedLocale, '/tags')}
+                    aria-label={resolvedMessages.nav.tags}
+                    className={cn(
+                      'inline-flex items-center justify-center whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      sidebarIconButtonClass,
+                      isTagsActive && sidebarIconActiveClass,
+                    )}
+                    prefetch
                   >
-                    <Link href={localizePath(resolvedLocale, '/tags')} aria-label={resolvedMessages.nav.tags} prefetch>
-                      <Tag className={cn(sidebarIconGlyphClass, isTagsActive ? 'fill-current' : 'fill-none')} />
-                      <span className="sr-only">{resolvedMessages.nav.tags}</span>
-                    </Link>
-                  </Button>
+                    <Tag className={cn(sidebarIconGlyphClass, isTagsActive ? 'fill-current' : 'fill-none')} />
+                    <span className="sr-only">{resolvedMessages.nav.tags}</span>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">{resolvedMessages.nav.tags}</TooltipContent>
               </Tooltip>

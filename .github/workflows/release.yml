@@ -67,6 +67,5 @@ jobs:
         with:
           body_path: release-notes.md
           tag_name: ${{ github.ref_name }}
-          name: '#${{ github.ref_name }} Release'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
