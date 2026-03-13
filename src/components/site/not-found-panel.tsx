@@ -1,6 +1,5 @@
 import type { AppLocale } from '@/lib/i18n'
 import type { LocaleMessages } from '@/locales/en'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { localizePath } from '@/lib/i18n'
 
@@ -19,14 +18,14 @@ export function NotFoundPanel({ locale, messages }: NotFoundPanelProps) {
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button asChild className="rounded-full px-5">
-            <Link href={localizePath(locale, '/')} prefetch>
+            <a href={localizePath(locale, '/')}>
               {messages.notFound.goHome}
-            </Link>
+            </a>
           </Button>
           <Button asChild variant="outline" className="rounded-full px-5">
-            <Link href={localizePath(locale, '/search')} prefetch>
+            <a href={localizePath(locale, '/search')}>
               {messages.notFound.openSearch}
-            </Link>
+            </a>
           </Button>
         </div>
       </section>

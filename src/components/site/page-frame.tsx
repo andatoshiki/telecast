@@ -3,7 +3,6 @@ import type { AppLocale } from '@/lib/i18n'
 import type { ChannelInfo } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
 import { Github, House, Languages, Rss, Send, Tag } from 'lucide-react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -163,7 +162,7 @@ export function PageFrame({
                 : null}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
+                  <a
                     href={localizePath(resolvedLocale, '/')}
                     aria-label={resolvedMessages.nav.home}
                     className={cn(
@@ -171,17 +170,16 @@ export function PageFrame({
                       sidebarIconButtonClass,
                       isHomeActive && sidebarIconActiveClass,
                     )}
-                    prefetch
                   >
                     <House className={cn(sidebarIconGlyphClass, isHomeActive ? 'fill-current' : 'fill-none')} />
                     <span className="sr-only">{resolvedMessages.nav.home}</span>
-                  </Link>
+                  </a>
                 </TooltipTrigger>
                 <TooltipContent side="right">{resolvedMessages.nav.home}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
+                  <a
                     href={localizePath(resolvedLocale, '/tags')}
                     aria-label={resolvedMessages.nav.tags}
                     className={cn(
@@ -189,11 +187,10 @@ export function PageFrame({
                       sidebarIconButtonClass,
                       isTagsActive && sidebarIconActiveClass,
                     )}
-                    prefetch
                   >
                     <Tag className={cn(sidebarIconGlyphClass, isTagsActive ? 'fill-current' : 'fill-none')} />
                     <span className="sr-only">{resolvedMessages.nav.tags}</span>
-                  </Link>
+                  </a>
                 </TooltipTrigger>
                 <TooltipContent side="right">{resolvedMessages.nav.tags}</TooltipContent>
               </Tooltip>
@@ -204,7 +201,7 @@ export function PageFrame({
                     variant="ghost"
                     className={sidebarIconButtonClass}
                   >
-                    <Link
+                    <a
                       href="/rss.xml"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -212,7 +209,7 @@ export function PageFrame({
                     >
                       <Rss className={cn(sidebarIconGlyphClass, 'fill-none')} />
                       <span className="sr-only">{resolvedMessages.external.rss}</span>
-                    </Link>
+                    </a>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">{resolvedMessages.external.rss}</TooltipContent>
@@ -224,7 +221,7 @@ export function PageFrame({
                     variant="ghost"
                     className={sidebarIconButtonClass}
                   >
-                    <Link
+                    <a
                       href={githubRepoHref}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -232,7 +229,7 @@ export function PageFrame({
                     >
                       <Github className={cn(sidebarIconGlyphClass, 'fill-none')} />
                       <span className="sr-only">{githubRepoTitle}</span>
-                    </Link>
+                    </a>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">{githubRepoTitle}</TooltipContent>
@@ -246,7 +243,7 @@ export function PageFrame({
                           variant="ghost"
                           className={sidebarIconButtonClass}
                         >
-                          <Link
+                          <a
                             href={telegramChannelHref}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -254,7 +251,7 @@ export function PageFrame({
                           >
                             <Send className={cn(sidebarIconGlyphClass, 'fill-none')} />
                             <span className="sr-only">{resolvedMessages.external.telegram}</span>
-                          </Link>
+                          </a>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent side="right">{resolvedMessages.external.telegram}</TooltipContent>
@@ -299,14 +296,13 @@ export function PageFrame({
                   <DropdownMenuContent side="right" align="start" className="w-44">
                     {SUPPORTED_LOCALES.map(targetLocale => (
                       <DropdownMenuItem key={`locale-switch-${targetLocale}`} asChild>
-                        <Link
+                        <a
                           href={localizePath(targetLocale, activePathForLocaleSwitch)}
                           className="flex w-full items-center gap-2"
-                          prefetch
                         >
                           <span>{localeMenuLabels[targetLocale]}</span>
                           <DropdownMenuItemCheck visible={targetLocale === resolvedLocale} />
-                        </Link>
+                        </a>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -331,7 +327,7 @@ export function PageFrame({
         <main className="min-w-0">
           <div className="sticky top-0 z-[5] border-b bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/70">
             <div className="flex items-center justify-between gap-3">
-              <Link href={localizePath(resolvedLocale, '/')} className="flex min-w-0 items-center gap-3" prefetch>
+              <a href={localizePath(resolvedLocale, '/')} className="flex min-w-0 items-center gap-3">
                 <img
                   src={avatar}
                   alt={channel.title}
@@ -339,7 +335,7 @@ export function PageFrame({
                   loading="eager"
                 />
                 <p className="min-w-0 truncate text-base font-semibold">{channel.title}</p>
-              </Link>
+              </a>
               <p className="shrink-0 text-sm font-medium text-muted-foreground">{getPageTitle(currentPath, resolvedMessages, pageNumber)}</p>
             </div>
           </div>

@@ -2,7 +2,6 @@ import type { AppLocale } from '@/lib/i18n'
 import type { ChannelPost } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { localizePath } from '@/lib/i18n'
 import { PostCard } from './post-card'
@@ -72,10 +71,10 @@ export function FeedList({
           {resolvedOlderHref
             ? (
                 <Button asChild variant="outline" className="rounded-full">
-                  <Link href={resolvedOlderHref} prefetch>
+                  <a href={resolvedOlderHref}>
                     <ArrowLeft className="h-4 w-4" />
                     {messages.feed.older}
-                  </Link>
+                  </a>
                 </Button>
               )
             : <span />}
@@ -83,10 +82,10 @@ export function FeedList({
           {resolvedNewerHref
             ? (
                 <Button asChild variant="outline" className="rounded-full">
-                  <Link href={resolvedNewerHref} prefetch>
+                  <a href={resolvedNewerHref}>
                     {messages.feed.newer}
                     <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  </a>
                 </Button>
               )
             : null}

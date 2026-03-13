@@ -2,7 +2,6 @@ import type { AppLocale } from '@/lib/i18n'
 import type { ChannelPost } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
 import { Eye, Tag } from 'lucide-react'
-import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { localizePath } from '@/lib/i18n'
 import { formatPostTimestamp } from '@/lib/time'
@@ -81,11 +80,11 @@ export function PostCard({
               ? <span className="text-muted-foreground">·</span>
               : null}
 
-            <Link href={localizePath(uiLocale, `/posts/${post.id}`)} className="link-smooth text-muted-foreground" prefetch>
+            <a href={localizePath(uiLocale, `/posts/${post.id}`)} className="link-smooth text-muted-foreground">
               <time dateTime={post.datetime} title={post.datetime}>
                 {formattedTime || post.datetime}
               </time>
-            </Link>
+            </a>
 
           </div>
 
@@ -98,11 +97,11 @@ export function PostCard({
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Tag className="h-4 w-4 text-muted-foreground" />
                   {post.tags.map(tag => (
-                    <Link key={`${post.id}-${tag}`} href={localizePath(uiLocale, `/search?q=${encodeURIComponent(`#${tag}`)}`)} prefetch>
+                    <a key={`${post.id}-${tag}`} href={localizePath(uiLocale, `/search?q=${encodeURIComponent(`#${tag}`)}`)}>
                       <Badge variant="outline" className="cursor-pointer rounded-full px-3 hover:bg-secondary">
                         {tag}
                       </Badge>
-                    </Link>
+                    </a>
                   ))}
                 </div>
               )

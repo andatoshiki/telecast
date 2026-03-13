@@ -5,7 +5,6 @@ import type { ReactNode } from 'react'
 import type { AppLocale } from '@/lib/i18n'
 import type { LocaleMessages } from '@/locales/en'
 import { Loader2 } from 'lucide-react'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { localizePath } from '@/lib/i18n'
@@ -279,9 +278,9 @@ export function SearchResultsPanel({ locale, messages }: SearchResultsPanelProps
           return (
             <article key={result.doc.id} className="border-b px-4 py-4">
               <div className="mb-1.5 flex items-center justify-between gap-3">
-                <Link href={localizePath(locale, `/posts/${result.doc.id}`)} className="link-smooth text-sm font-semibold text-foreground" prefetch>
+                <a href={localizePath(locale, `/posts/${result.doc.id}`)} className="link-smooth text-sm font-semibold text-foreground">
                   {renderHighlightedText(title, terms)}
-                </Link>
+                </a>
                 <span className="shrink-0 text-xs text-muted-foreground">{formatDatetime(result.doc.datetime, locale)}</span>
               </div>
 

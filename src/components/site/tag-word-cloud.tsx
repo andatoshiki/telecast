@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react'
 import type { AppLocale } from '@/lib/i18n'
-import Link from 'next/link'
 import { localizePath } from '@/lib/i18n'
 
 export interface TagCloudEntry {
@@ -47,12 +46,11 @@ export function TagWordCloud({ entries, locale }: TagWordCloudProps) {
         } as CSSProperties
 
         return (
-          <Link
+          <a
             key={entry.tag}
             href={localizePath(locale, `/search?q=${encodeURIComponent(`#${entry.tag}`)}`)}
             className="tag-cloud-item"
             style={style}
-            prefetch
           >
             <span className="tag-cloud-label">
               #
@@ -60,7 +58,7 @@ export function TagWordCloud({ entries, locale }: TagWordCloudProps) {
               {entry.tag}
             </span>
             <span className="tag-cloud-count" aria-hidden>{entry.count}</span>
-          </Link>
+          </a>
         )
       })}
     </div>

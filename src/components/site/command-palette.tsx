@@ -17,7 +17,7 @@ import {
   Sparkles,
   Tag,
 } from 'lucide-react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -175,7 +175,6 @@ export function CommandPalette({
   triggerMode = 'full',
   triggerClassName,
 }: CommandPaletteProps) {
-  const router = useRouter()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<PaletteMode>('navigate')
@@ -318,9 +317,9 @@ export function CommandPalette({
   }, [ensureSearchIndex])
 
   const openInternal = useCallback((href: string) => {
-    router.push(localizePath(locale, href))
+    window.location.assign(localizePath(locale, href))
     closePalette()
-  }, [router, closePalette, locale])
+  }, [closePalette, locale])
 
   const openExternal = useCallback((href: string) => {
     window.open(href, '_blank', 'noopener,noreferrer')
