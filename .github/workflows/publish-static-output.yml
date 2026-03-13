@@ -50,4 +50,5 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./out
           destination_dir: site
+          force_orphan: true
           commit_message: "chore(ci): publish static output to `gh-pages` branch for serverless deployment"
