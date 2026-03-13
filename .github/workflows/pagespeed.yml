@@ -22,6 +22,7 @@ jobs:
           filename: .github/assets/pagespeed-metrics.svg
           token: ${{ secrets.GITHUB_TOKEN }}
           committer_message: "docs(readme): update pagespeed metrics [skip ci]"
+          base: ""
           plugin_pagespeed: yes
           plugin_pagespeed_detailed: yes
           plugin_pagespeed_url: https://tg.toshiki.dev
