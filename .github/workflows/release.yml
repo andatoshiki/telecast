@@ -60,7 +60,7 @@ jobs:
             done < /tmp/commits.txt
           } > release-notes.md
 
-          [[ -s release-notes.md ]] || echo "#${TAG} Release" > release-notes.md
+          [[ -s release-notes.md ]] || echo "# ${TAG} Release" > release-notes.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
