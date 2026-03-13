@@ -302,3 +302,7 @@ Project scripts include commitlint and changelog tooling for conventional releas
 ### 11.1: License terms
 
 This project is licensed under AGPL-3.0.
+
+# 12: Page Speed Insights and SEO
+
+![Page Speed Metrics](.github/assets/pagespeed-metrics.svg)
