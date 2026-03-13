@@ -303,6 +303,6 @@ Project scripts include commitlint and changelog tooling for conventional releas
 
 This project is licensed under AGPL-3.0.
 
-# 12: Page Speed Insights and SEO
+## 12: Page Speed Insights and SEO
 
 ![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@master/.github/assets/pagespeed-metrics.svg)
