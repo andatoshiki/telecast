@@ -2,11 +2,12 @@ import type { StaticSnapshot } from '../src/lib/telegram/static-snapshot'
 import type { ChannelInfo } from '../src/lib/types'
 import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
-import { access, mkdir, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import * as cheerio from 'cheerio'
 import lunr from 'lunr'
+import sharp from 'sharp'
 import { SITE_CONSTANTS } from '../src/lib/constant'
 import { buildPostSearchDataset } from '../src/lib/search/search-documents'
 import {
@@ -387,12 +388,20 @@ function createMirrorProgressTracker(total: number): MirrorProgressTracker {
 
   const getLine = () => `[telecast] mirroring media ${formatMirrorProgressBar(completed, total)}`
 
-  if (isTty) {
-    process.stdout.write(`${getLine()}\r`)
+  const writeLine = (newline = false) => {
+    if (isTty) {
+      process.stdout.write(`\x1b[2K\r${getLine()}${newline ? '\n' : ''}`)
+    }
+    else {
+      const percent = Math.round((completed / Math.max(total, 1)) * 100)
+      if (percent - lastLoggedPercent >= 10 || completed === total || completed === 0) {
+        lastLoggedPercent = percent
+        console.info(getLine())
+      }
+    }
   }
-  else {
-    console.info(getLine())
-  }
+
+  writeLine()
 
   return {
     tick() {
@@ -401,16 +410,7 @@ function createMirrorProgressTracker(total: number): MirrorProgressTracker {
       }
 
       completed = Math.min(total, completed + 1)
-      if (isTty) {
-        process.stdout.write(`${getLine()}\r`)
-        return
-      }
-
-      const percent = Math.round((completed / total) * 100)
-      if (percent - lastLoggedPercent >= 10 || completed === total) {
-        lastLoggedPercent = percent
-        console.info(getLine())
-      }
+      writeLine()
     },
     finish() {
       if (closed) {
@@ -419,12 +419,7 @@ function createMirrorProgressTracker(total: number): MirrorProgressTracker {
 
       closed = true
       completed = total
-      if (isTty) {
-        process.stdout.write(`${getLine()}\n`)
-      }
-      else if (lastLoggedPercent < 100) {
-        console.info(getLine())
-      }
+      writeLine(true)
     },
   }
 }
@@ -668,6 +663,8 @@ async function run() {
   console.info(`[telecast] pages: ${mirroredSnapshot.pages.length}, posts: ${mirroredSnapshot.postIds.length}`)
   console.info(`[telecast] mirrored media urls: ${stats.resolvedCount}, new downloads: ${stats.downloadedCount}`)
 
+  await generateImageMeta()
+
   if (shouldGenerateOgImage) {
     const ogResult = await generateOgImageFromChannel(mirroredSnapshot.root)
     console.info(`[telecast] og image: ${ogResult.relativePath}`)
@@ -675,6 +672,72 @@ async function run() {
   else {
     console.info('[telecast] og image generation skipped pass --og-image to generate /og-auto.png')
   }
+}
+
+const IMAGE_META_PATH = path.join(MEDIA_OUTPUT_DIR, 'image-meta.json')
+const IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif'])
+const BLUR_PLACEHOLDER_WIDTH = 20
+
+interface ImageMeta {
+  w: number
+  h: number
+  b: string // base64 data URI of tiny JPEG placeholder
+}
+
+async function generateImageMeta() {
+  let existing: Record<string, ImageMeta> = {}
+  try {
+    const raw = await readFile(IMAGE_META_PATH, 'utf8')
+    existing = JSON.parse(raw) as Record<string, ImageMeta>
+  }
+  catch {
+    // First run or missing file — start fresh.
+  }
+
+  const files = await readdir(MEDIA_OUTPUT_DIR)
+  const imageFiles = files.filter((f) => {
+    const ext = path.extname(f).toLowerCase()
+    return IMAGE_EXTENSIONS.has(ext)
+  })
+
+  let generated = 0
+  const meta: Record<string, ImageMeta> = {}
+
+  for (const file of imageFiles) {
+    // Reuse existing entry if available.
+    if (existing[file]) {
+      meta[file] = existing[file]
+      continue
+    }
+
+    try {
+      const filePath = path.join(MEDIA_OUTPUT_DIR, file)
+      const image = sharp(filePath)
+      const { width, height } = await image.metadata()
+
+      if (!width || !height) {
+        continue
+      }
+
+      const placeholderBuffer = await image
+        .resize(BLUR_PLACEHOLDER_WIDTH, Math.max(1, Math.round(BLUR_PLACEHOLDER_WIDTH * height / width)))
+        .jpeg({ quality: 40 })
+        .toBuffer()
+
+      meta[file] = {
+        w: width,
+        h: height,
+        b: `data:image/jpeg;base64,${placeholderBuffer.toString('base64')}`,
+      }
+      generated += 1
+    }
+    catch {
+      // Skip files that sharp can't process (corrupted, etc.).
+    }
+  }
+
+  await writeFile(IMAGE_META_PATH, JSON.stringify(meta), 'utf8')
+  console.info(`[telecast] image meta: ${Object.keys(meta).length} entries (${generated} new)`)
 }
 
 run().catch((error) => {

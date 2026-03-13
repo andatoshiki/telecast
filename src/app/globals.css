@@ -202,16 +202,19 @@
     width: 100%;
     max-width: 100%;
     transition:
-      filter 260ms ease,
-      opacity 260ms ease,
-      transform 260ms ease;
+      filter 350ms ease,
+      opacity 350ms ease,
+      transform 280ms ease;
     will-change: filter, opacity, transform;
   }
 
   .prose-telegram img.zoomable.image-loading {
-    filter: blur(16px);
-    opacity: 0.72;
-    transform: scale(1.02);
+    filter: blur(20px);
+    opacity: 0.85;
+    transform: scale(1.04);
+    /* When a blur placeholder background is set, the image element itself
+       is transparent until loaded. The tiny JPEG shows through as the
+       blurred preview while the real image downloads. */
   }
 
   .prose-telegram img.zoomable.image-loaded {

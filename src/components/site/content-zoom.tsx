@@ -39,9 +39,28 @@ export function ContentZoom() {
       img.dataset.imageEnhanced = 'true'
       img.decoding = 'async'
 
+      // Apply LQIP blur placeholder as background if available.
+      const blurSrc = img.dataset.blurSrc
+      if (blurSrc) {
+        img.style.backgroundImage = `url("${blurSrc}")`
+        img.style.backgroundSize = 'cover'
+        img.style.backgroundPosition = 'center'
+        img.style.backgroundRepeat = 'no-repeat'
+      }
+
       const markLoaded = () => {
         img.classList.remove('image-loading')
         img.classList.add('image-loaded')
+        // Remove blur placeholder background once the real image is visible.
+        if (blurSrc) {
+          // Delay removal slightly so the transition is seamless.
+          setTimeout(() => {
+            img.style.backgroundImage = ''
+            img.style.backgroundSize = ''
+            img.style.backgroundPosition = ''
+            img.style.backgroundRepeat = ''
+          }, 300)
+        }
       }
 
       if (img.complete && img.naturalWidth > 0) {

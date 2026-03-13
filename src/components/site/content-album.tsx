@@ -24,9 +24,31 @@ const MIN_CELL = 40 // minimum cell dimension (px)
 interface Rect { x: number, y: number, w: number, h: number }
 type Layout = Rect[]
 
-/** Aspect ratio (w/h) clamped to avoid extremes. */
+/** Aspect ratio (w/h) clamped to avoid extremes. Uses naturalWidth if loaded, falls back to width/height attributes. */
 function ar(img: HTMLImageElement): number {
-  return Math.max(0.25, Math.min(img.naturalWidth / img.naturalHeight, 4))
+  const nw = img.naturalWidth
+  const nh = img.naturalHeight
+  if (nw > 0 && nh > 0) {
+    return Math.max(0.25, Math.min(nw / nh, 4))
+  }
+  // Fallback: build-time width/height attributes
+  const aw = Number(img.getAttribute('width')) || 0
+  const ah = Number(img.getAttribute('height')) || 0
+  if (aw > 0 && ah > 0) {
+    return Math.max(0.25, Math.min(aw / ah, 4))
+  }
+  // Ultimate fallback: assume 4:3
+  return 1.33
+}
+
+/** Whether we can determine an aspect ratio for this image (loaded or has attrs). */
+function hasAspectRatio(img: HTMLImageElement): boolean {
+  if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+    return true
+  }
+  const aw = Number(img.getAttribute('width')) || 0
+  const ah = Number(img.getAttribute('height')) || 0
+  return aw > 0 && ah > 0
 }
 
 /** Sum of aspect ratios in slice `[from, to)`. */
@@ -347,8 +369,10 @@ function layoutContainer(container: HTMLElement): boolean {
     return false
   }
 
-  const allLoaded = images.every(img => img.complete && img.naturalWidth > 0)
-  if (!allLoaded) {
+  // We can lay out immediately if we have aspect ratios from attributes,
+  // even before images have loaded.
+  const canLayout = images.every(img => hasAspectRatio(img))
+  if (!canLayout) {
     return false
   }
 
@@ -398,6 +422,14 @@ export function ContentAlbum() {
       }
 
       if (layoutContainer(container)) {
+        // Layout succeeded (from attrs or loaded images). Set up a re-layout
+        // when images actually finish loading, for pixel-perfect refinement.
+        const relayout = () => layoutContainer(container)
+        images.forEach((img) => {
+          if (!img.complete) {
+            img.addEventListener('load', relayout, { once: true })
+          }
+        })
         return
       }
 

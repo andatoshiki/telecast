@@ -4,6 +4,7 @@ import flourite from 'flourite'
 import { LRUCache } from 'lru-cache'
 import { $fetch } from 'ofetch'
 import { buildStaticProxyUrl, getAppConfig } from '@/lib/config'
+import { extractMediaFilename, getImageMetaMap } from '@/lib/image-meta'
 import prism from '@/lib/prism'
 import { sanitizeDescriptionHtml, sanitizePostHtml } from '@/lib/sanitize'
 
@@ -191,7 +192,8 @@ function getImageStickers($: cheerio.CheerioAPI, item: cheerio.Element, staticPr
     ?.join('')
 }
 
-function getImages($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: string, index: number, title: string) {
+async function getImages($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: string, index: number, title: string) {
+  const metaMap = await getImageMetaMap()
   const images = $(item)
     .find('.tgme_widget_message_photo_wrap')
     ?.map((_index, photo) => {
@@ -202,10 +204,17 @@ function getImages($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: st
       }
 
       const escapedTitle = escapeHtmlAttr(title || 'Post image')
-      const escapedUrl = escapeHtmlAttr(buildStaticProxyUrl(staticProxy, url))
+      const proxyUrl = buildStaticProxyUrl(staticProxy, url)
+      const escapedUrl = escapeHtmlAttr(proxyUrl)
+
+      // Look up build-time image metadata for dimensions + blur placeholder.
+      const filename = extractMediaFilename(proxyUrl)
+      const meta = metaMap[filename]
+      const sizeAttrs = meta ? ` width="${meta.w}" height="${meta.h}"` : ''
+      const blurAttr = meta?.b ? ` data-blur-src="${escapeHtmlAttr(meta.b)}"` : ''
 
       return `
-      <img class="zoomable" src="${escapedUrl}" alt="${escapedTitle}" loading="lazy" />`
+      <img class="zoomable" src="${escapedUrl}" alt="${escapedTitle}" loading="lazy"${sizeAttrs}${blurAttr} />`
     })
     ?.get()
     ?.filter(Boolean)
@@ -517,7 +526,7 @@ async function getPost(
 
   const rawContent = [
     getReply($, messageNode[0], channel),
-    getImages($, messageNode[0], staticProxy, index, title),
+    await getImages($, messageNode[0], staticProxy, index, title),
     getVideo($, messageNode[0], staticProxy, index),
     contentNode?.html(),
     getImageStickers($, messageNode[0], staticProxy, index),
