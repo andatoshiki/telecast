@@ -85,7 +85,7 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
   // Bluesky handle (e.g. username.bsky.social).
   bluesky: 'andatoshiki.bsky.social',
   // Optional inline markdown shown above main content (e.g. **alert**, [link](https://...)).
-  customBanner: '**Open source under AGPL-3.0.** [Get Telecast on GitHub](https://github.com/andatohsiki/telecast) and launch your own instance in minutes with minimal configuration!',
+  customBanner: '**This project is open source under AGPL-3.0.** [Get Telecast on GitHub](https://github.com/andatoshiki/telecast) and launch your own instance in minutes with minimal configuration!',
   // Optional inline markdown to replace the default footer.
   customFooter: '',
   // Whether to beautify RSS output with XSLT styling.
