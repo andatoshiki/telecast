@@ -66,7 +66,7 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
     // Enable Cloudflare image transform delivery for local mirrored images under /media/*.
     transform: true,
     // Cloudflare image transform prefix used when cloudFlare.transform is enabled.
-    transformPrefix: '/cdn-cgi/image/format=auto',
+    transformPrefix: '/cdn-cgi/image/format=auto,quality=85/',
   },
   // Whether to hide the channel description on the site.
   hideDescription: false,
