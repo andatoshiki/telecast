@@ -1,4 +1,4 @@
-import type { AnalyticsConfig, SeoConfig } from './constant'
+import type { AnalyticsConfig, CloudFlareConfig, SeoConfig } from './constant'
 import { SITE_CONSTANTS } from './constant'
 
 const ABSOLUTE_URL_PATTERN = /^https?:\/\//i
@@ -9,6 +9,7 @@ export interface AppConfig {
   timezone: string
   siteUrl: string
   staticProxy: string
+  cloudFlare: CloudFlareConfig
   telegramHost: string
   hideDescription: boolean
   reactionsEnabled: boolean
@@ -96,6 +97,7 @@ export function getAppConfig(): AppConfig {
     timezone: SITE_CONSTANTS.timezone,
     siteUrl: SITE_CONSTANTS.siteUrl,
     staticProxy: normalizeStaticProxy(SITE_CONSTANTS.staticProxy),
+    cloudFlare: SITE_CONSTANTS.cloudFlare,
     telegramHost: SITE_CONSTANTS.telegramHost,
     hideDescription: SITE_CONSTANTS.hideDescription,
     reactionsEnabled: SITE_CONSTANTS.reactionsEnabled,

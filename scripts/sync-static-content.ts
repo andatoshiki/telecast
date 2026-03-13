@@ -33,6 +33,9 @@ function normalizeMediaDirectory(value: string) {
 
 const MEDIA_DIRECTORY = normalizeMediaDirectory(SITE_CONSTANTS.mediaMirror.directory)
 const MEDIA_OUTPUT_DIR = path.resolve(process.cwd(), `public${MEDIA_DIRECTORY}`)
+const MEDIA_URL_PREFIX = `${MEDIA_DIRECTORY}/`
+const CLOUDFLARE_IMAGE_MARKER = '/cdn-cgi/image/'
+const CLOUDFLARE_CONFIG = SITE_CONSTANTS.cloudFlare
 
 const SUPPORTED_MEDIA_ATTRIBUTES: Array<[selector: string, attribute: string]> = [
   ['img[src]', 'src'],
@@ -116,7 +119,7 @@ function normalizeRemoteMediaUrl(input: string) {
     return ''
   }
 
-  if (normalized.startsWith(`${MEDIA_DIRECTORY}/`)) {
+  if (normalized.startsWith(MEDIA_URL_PREFIX)) {
     return normalized
   }
 
@@ -141,6 +144,78 @@ function normalizeRemoteMediaUrl(input: string) {
   catch {
     return ''
   }
+}
+
+function normalizeCloudflareTransformPrefix(input: string) {
+  const normalized = input.trim()
+  if (!normalized) {
+    return '/cdn-cgi/image/format=auto'
+  }
+
+  return normalized.endsWith('/')
+    ? normalized.slice(0, -1)
+    : normalized
+}
+
+function isCloudflareTransformEnabled() {
+  if (!CLOUDFLARE_CONFIG.transform) {
+    return false
+  }
+
+  const forceValue = (process.env.TELECAST_FORCE_CLOUDFLARE_TRANSFORM || '').trim().toLowerCase()
+  if (forceValue === '1' || forceValue === 'true' || forceValue === 'yes') {
+    return true
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    return true
+  }
+
+  if (process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true') {
+    return true
+  }
+
+  return false
+}
+
+function applyCloudflareImageTransform(rawValue: string) {
+  const input = rawValue.trim()
+  if (!input || !isCloudflareTransformEnabled()) {
+    return rawValue
+  }
+
+  if (input.includes(CLOUDFLARE_IMAGE_MARKER)) {
+    return input
+  }
+
+  const prefix = normalizeCloudflareTransformPrefix(CLOUDFLARE_CONFIG.transformPrefix)
+
+  if (input.startsWith(MEDIA_URL_PREFIX)) {
+    return `${prefix}${input}`
+  }
+
+  try {
+    const parsed = new URL(input)
+    if (!parsed.pathname.startsWith(MEDIA_URL_PREFIX)) {
+      return input
+    }
+    return `${prefix}${parsed.pathname}${parsed.search}${parsed.hash}`
+  }
+  catch {
+    return input
+  }
+}
+
+function shouldApplyTransformOnHtmlAttribute(selector: string, attribute: string) {
+  if (selector.startsWith('img[') && (attribute === 'src' || attribute === 'srcset')) {
+    return true
+  }
+
+  if (selector === 'video[poster]' && attribute === 'poster') {
+    return true
+  }
+
+  return false
 }
 
 function normalizeFileExtensionFromPathname(pathname: string) {
@@ -252,7 +327,7 @@ function collectHtmlMediaCandidates(html: string) {
 
 function trackMirrorCandidate(rawValue: string, candidates: Set<string>) {
   const normalizedUrl = normalizeRemoteMediaUrl(rawValue)
-  if (!normalizedUrl || normalizedUrl.startsWith(`${MEDIA_DIRECTORY}/`)) {
+  if (!normalizedUrl || normalizedUrl.startsWith(MEDIA_URL_PREFIX)) {
     return
   }
 
@@ -366,7 +441,7 @@ async function buildMediaMirror(options: BuildMediaMirrorOptions = {}) {
       return rawValue
     }
 
-    if (normalizedUrl.startsWith(`${MEDIA_DIRECTORY}/`)) {
+    if (normalizedUrl.startsWith(MEDIA_URL_PREFIX)) {
       return normalizedUrl
     }
 
@@ -456,15 +531,23 @@ async function rewriteHtmlMediaUrls(html: string, mirrorUrl: (value: string) => 
 
       if (attribute === 'srcset') {
         const entries = parseSrcsetEntries(currentValue)
-        const rewrittenEntries = await Promise.all(entries.map(async entry => ({
-          ...entry,
-          url: await mirrorUrl(entry.url),
-        })))
+        const shouldTransform = shouldApplyTransformOnHtmlAttribute(selector, attribute)
+        const rewrittenEntries = await Promise.all(entries.map(async (entry) => {
+          const mirrored = await mirrorUrl(entry.url)
+          return {
+            ...entry,
+            url: shouldTransform ? applyCloudflareImageTransform(mirrored) : mirrored,
+          }
+        }))
         element.attr(attribute, mergeSrcsetEntries(rewrittenEntries))
         continue
       }
 
-      element.attr(attribute, await mirrorUrl(currentValue))
+      const mirrored = await mirrorUrl(currentValue)
+      const finalValue = shouldApplyTransformOnHtmlAttribute(selector, attribute)
+        ? applyCloudflareImageTransform(mirrored)
+        : mirrored
+      element.attr(attribute, finalValue)
     }
   }
 
@@ -478,7 +561,7 @@ async function rewriteHtmlMediaUrls(html: string, mirrorUrl: (value: string) => 
 
     const urls = collectStyleUrls(styleValue)
     for (const candidateUrl of urls) {
-      const rewrittenUrl = await mirrorUrl(candidateUrl)
+      const rewrittenUrl = applyCloudflareImageTransform(await mirrorUrl(candidateUrl))
       styleValue = styleValue.replace(candidateUrl, rewrittenUrl)
     }
 
@@ -506,7 +589,7 @@ async function mirrorSnapshotAssets(snapshot: StaticSnapshot) {
 
     for (const channel of channels) {
       if (channel.avatar) {
-        channel.avatar = await mirrorUrl(channel.avatar)
+        channel.avatar = applyCloudflareImageTransform(await mirrorUrl(channel.avatar))
       }
 
       channel.descriptionHTML = await rewriteHtmlMediaUrls(channel.descriptionHTML || '', mirrorUrl)
@@ -516,7 +599,7 @@ async function mirrorSnapshotAssets(snapshot: StaticSnapshot) {
 
         for (const reaction of post.reactions) {
           if (reaction.emojiImage) {
-            reaction.emojiImage = await mirrorUrl(reaction.emojiImage)
+            reaction.emojiImage = applyCloudflareImageTransform(await mirrorUrl(reaction.emojiImage))
           }
         }
       }

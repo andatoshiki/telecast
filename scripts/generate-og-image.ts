@@ -33,6 +33,7 @@ const MIME_BY_EXTENSION: Record<string, string> = {
   '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
 }
+const CLOUDFLARE_IMAGE_MARKER = '/cdn-cgi/image/'
 
 function escapeXml(value: string) {
   return value
@@ -230,14 +231,30 @@ async function getAvatarHref(avatar: string) {
     return ''
   }
 
-  if (trimmed.startsWith('data:image/')) {
-    return trimmed
+  const resolveCloudflareSourcePath = (value: string) => {
+    if (!value.startsWith(CLOUDFLARE_IMAGE_MARKER)) {
+      return value
+    }
+
+    const rest = value.slice(CLOUDFLARE_IMAGE_MARKER.length)
+    const firstSlash = rest.indexOf('/')
+    if (firstSlash === -1) {
+      return value
+    }
+
+    return `/${rest.slice(firstSlash + 1)}`
   }
 
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+  const normalizedPath = resolveCloudflareSourcePath(trimmed)
+
+  if (normalizedPath.startsWith('data:image/')) {
+    return normalizedPath
+  }
+
+  if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) {
     const localMediaDataUri = async () => {
       try {
-        const fileName = path.basename(new URL(trimmed).pathname)
+        const fileName = path.basename(new URL(normalizedPath).pathname)
         if (!fileName) {
           return ''
         }
@@ -259,11 +276,11 @@ async function getAvatarHref(avatar: string) {
     return await localMediaDataUri()
   }
 
-  if (!trimmed.startsWith('/')) {
+  if (!normalizedPath.startsWith('/')) {
     return ''
   }
 
-  const absolutePath = path.resolve(process.cwd(), 'public', trimmed.slice(1))
+  const absolutePath = path.resolve(process.cwd(), 'public', normalizedPath.slice(1))
   try {
     const bytes = await readFile(absolutePath)
     const extension = path.extname(absolutePath).toLowerCase()

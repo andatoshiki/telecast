@@ -19,6 +19,11 @@ export interface AnalyticsConfig {
   umamiWebsiteId: string
 }
 
+export interface CloudFlareConfig {
+  transform: boolean
+  transformPrefix: string
+}
+
 export interface SiteConstantConfig {
   channel: string
   locale: string
@@ -26,6 +31,7 @@ export interface SiteConstantConfig {
   siteUrl: string
   telegramHost: string
   staticProxy: string
+  cloudFlare: CloudFlareConfig
   hideDescription: boolean
   reactionsEnabled: boolean
   website: string
@@ -56,6 +62,12 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
   telegramHost: 't.me',
   // Proxy base URL for Telegram-origin media. Leave empty unless you need a runtime proxy.
   staticProxy: '',
+  cloudFlare: {
+    // Enable Cloudflare image transform delivery for local mirrored images under /media/*.
+    transform: true,
+    // Cloudflare image transform prefix used when cloudFlare.transform is enabled.
+    transformPrefix: '/cdn-cgi/image/format=auto',
+  },
   // Whether to hide the channel description on the site.
   hideDescription: false,
   // Whether to show Telegram-style reactions on posts.
