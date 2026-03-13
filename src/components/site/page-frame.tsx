@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import packageJson from '../../../package.json'
 import { CommandPalette } from './command-palette'
 import { ContentCodeCopy } from './content-code-copy'
+import { ContentAlbum } from './content-album'
 import { ContentTwemoji } from './content-twemoji'
 import { ContentVideoPlayer } from './content-video-player'
 import { ContentZoom } from './content-zoom'
@@ -354,6 +355,7 @@ export function PageFrame({
                 </div>
               )}
           <ContentZoom />
+          <ContentAlbum />
           <ContentCodeCopy copyLabel={resolvedMessages.codeCopy.copyCode} copiedLabel={resolvedMessages.codeCopy.copied} />
           <ContentTwemoji />
           <ContentVideoPlayer />

@@ -214,13 +214,7 @@ function getImages($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: st
     return ''
   }
 
-  const layoutClass = images.length >= 6
-    ? 'image-list-masonry'
-    : images.length % 2 === 0
-      ? 'image-list-even'
-      : 'image-list-odd'
-
-  return `<div class="image-list-container ${layoutClass}">${images.join('')}</div>`
+  return `<div class="image-list-container" data-image-count="${images.length}">${images.join('')}</div>`
 }
 
 function getVideo($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: string, index: number) {

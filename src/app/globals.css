@@ -598,6 +598,26 @@
     max-width: 100%;
   }
 
+  /* Single image — large and centered */
+  .prose-telegram .image-list-container[data-image-count='1'] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .prose-telegram .image-list-container[data-image-count='1'] img.zoomable {
+    width: auto;
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+  }
+
+  /* Legacy odd-count fallback (existing snapshots without data-image-count) */
+  .prose-telegram .image-list-odd :first-child {
+    grid-column: 1 / span 2;
+  }
+
+  /* Legacy CSS-columns masonry fallback (existing snapshots) */
   .prose-telegram .image-list-container.image-list-masonry {
     display: block;
     columns: 2;
@@ -611,8 +631,23 @@
     page-break-inside: avoid;
   }
 
-  .prose-telegram .image-list-odd :first-child {
-    grid-column: 1 / span 2;
+  /* ── Album layout (JS-enhanced justified grid) ── */
+  .prose-telegram .image-list-container[data-album-laid] {
+    display: block;
+    columns: unset;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  .prose-telegram .image-list-container[data-album-laid] > :first-child {
+    grid-column: auto;
+  }
+
+  .prose-telegram .image-list-container[data-album-laid] img.zoomable {
+    margin: 0;
+    border-radius: 0;
+    break-inside: unset;
+    page-break-inside: unset;
   }
 
   .prose-telegram .image-list-container img.zoomable {
