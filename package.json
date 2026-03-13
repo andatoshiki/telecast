@@ -1,7 +1,7 @@
 {
   "name": "telecast",
   "type": "module",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "description": "Telecast — a self-hosted, statically-generated microblog that mirrors your Telegram channel into a fast, searchable, and beautifully designed website built with Next.js, React, shadcn/ui, Radix UI, and Tailwind CSS. Features full-text Lunr search, i18n, a command palette, syntax-highlighted code blocks, video playback, and automatic media mirroring — all compiled to pure static HTML at build time.",
   "author": {

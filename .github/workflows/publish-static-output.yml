@@ -49,4 +49,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./out
+          destination_dir: site
           commit_message: "chore(ci): publish static output to `gh-pages` branch for serverless deployment"
