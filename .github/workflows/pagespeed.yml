@@ -3,10 +3,13 @@ name: Generate Pagespeed Metrics
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 0" # every Sunday at midnight UTC
+    - cron: "0 0 * * 0"
+  push:
+    branches:
+      - master
 
 permissions:
-  contents: write  # required to commit the generated SVG
+  contents: write
 
 jobs:
   generate-metrics:
