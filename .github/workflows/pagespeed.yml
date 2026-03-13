@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * 0" # every Sunday at midnight UTC
-  push:
+
+permissions:
+  contents: write  # required to commit the generated SVG
 
 jobs:
   generate-metrics:
@@ -15,9 +17,9 @@ jobs:
         uses: lowlighter/metrics@latest
         with:
           filename: .github/assets/pagespeed-metrics.svg
-          token: NOT_NEEDED
+          token: ${{ secrets.GITHUB_TOKEN }}
           committer_message: "docs(readme): update pagespeed metrics [skip ci]"
           plugin_pagespeed: yes
           plugin_pagespeed_detailed: yes
-          
           plugin_pagespeed_url: https://tg.toshiki.dev
+          plugin_pagespeed_token: ${{ secrets.PAGESPEED_TOKEN }}
