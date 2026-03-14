@@ -34,6 +34,7 @@ export interface SiteConstantConfig {
   cloudFlare: CloudFlareConfig
   hideDescription: boolean
   reactionsEnabled: boolean
+  pwa: boolean
   website: string
   twitter: string
   github: string
@@ -72,6 +73,8 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
   hideDescription: false,
   // Whether to show Telegram-style reactions on posts.
   reactionsEnabled: true,
+  // Whether to enable Progressive Web App (PWA) support (service worker, manifest, offline caching).
+  pwa: true,
   // Main website URL for the author/org.
   website: 'https://toshiki.dev',
   // Twitter/X username only (no URL prefix).

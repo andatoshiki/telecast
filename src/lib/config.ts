@@ -13,6 +13,7 @@ export interface AppConfig {
   telegramHost: string
   hideDescription: boolean
   reactionsEnabled: boolean
+  pwa: boolean
   website: string
   twitter: string
   github: string
@@ -101,6 +102,7 @@ export function getAppConfig(): AppConfig {
     telegramHost: SITE_CONSTANTS.telegramHost,
     hideDescription: SITE_CONSTANTS.hideDescription,
     reactionsEnabled: SITE_CONSTANTS.reactionsEnabled,
+    pwa: SITE_CONSTANTS.pwa,
     website: SITE_CONSTANTS.website,
     twitter: SITE_CONSTANTS.twitter,
     github: SITE_CONSTANTS.github,

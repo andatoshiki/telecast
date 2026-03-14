@@ -1,6 +1,7 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { JsonLd } from '@/components/site/json-ld'
+import { ServiceWorkerRegister } from '@/components/site/service-worker-register'
 import { ThemeProvider } from '@/components/site/theme-provider'
 import { getAppConfig } from '@/lib/config'
 import { resolveSeoImageUrl } from '@/lib/seo'
@@ -20,8 +21,27 @@ const metaKeywords = Array.from(new Set(
     .filter(Boolean),
 ))
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a1a' },
+  ],
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  ...(config.pwa
+    ? {
+        appleWebApp: {
+          capable: true,
+          statusBarStyle: 'default',
+          title: defaultTitle,
+        },
+      }
+    : {}),
+  formatDetection: {
+    telephone: false,
+  },
   title: {
     default: defaultTitle,
     template: enMessages.metadata.titleTemplate,
@@ -60,7 +80,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {config.pwa && <link rel="apple-touch-icon" href="/icon-192x192.png" />}
+      </head>
       <body>
+        <ServiceWorkerRegister enabled={config.pwa} />
         <JsonLd
           data={{
             '@context': 'https://schema.org',

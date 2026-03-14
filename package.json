@@ -39,9 +39,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "pnpm sync && pnpm dev:next",
+    "dev": "pnpm sync -og-image --favicon && pnpm dev:next",
     "dev:next": "next dev -p 4321",
-    "build": "pnpm sync --og-image && next build --webpack",
+    "build": "pnpm sync --og-image --favicon && next build --webpack",
     "start": "next start -p 4321",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

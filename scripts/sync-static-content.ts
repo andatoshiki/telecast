@@ -2,7 +2,7 @@ import type { StaticSnapshot } from '../src/lib/telegram/static-snapshot'
 import type { ChannelInfo } from '../src/lib/types'
 import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
-import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
+import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import * as cheerio from 'cheerio'
@@ -390,7 +390,7 @@ function createMirrorProgressTracker(total: number): MirrorProgressTracker {
 
   const writeLine = (newline = false) => {
     if (isTty) {
-      process.stdout.write(`\x1b[2K\r${getLine()}${newline ? '\n' : ''}`)
+      process.stdout.write(`\x1B[2K\r${getLine()}${newline ? '\n' : ''}`)
     }
     else {
       const percent = Math.round((completed / Math.max(total, 1)) * 100)
@@ -645,8 +645,95 @@ function hasPosts(snapshot: StaticSnapshot | null | undefined) {
     || snapshot.root.posts.length > 0
 }
 
+const PUBLIC_DIR = path.resolve(process.cwd(), 'public')
+
+/**
+ * Generate favicon.ico, favicon.svg (embedded raster), and PWA icon PNGs
+ * from the Telegram channel avatar image.
+ */
+async function generateFaviconFromAvatar(channel: ChannelInfo) {
+  const avatarPath = channel.avatar?.replace(/^\/cdn-cgi\/image\/[^/]+\//, '/')
+  if (!avatarPath || !avatarPath.startsWith(MEDIA_URL_PREFIX)) {
+    console.info('[telecast] avatar favicon: skipped (no local avatar)')
+    return
+  }
+
+  const absolutePath = path.join(PUBLIC_DIR, avatarPath)
+  if (!(await fileExists(absolutePath))) {
+    console.info(`[telecast] avatar favicon: skipped (file not found: ${avatarPath})`)
+    return
+  }
+
+  try {
+    const source = sharp(absolutePath)
+
+    // favicon.ico — 48x48 PNG inside ICO container
+    const ico48 = await source.clone().resize(48, 48).png().toBuffer()
+    await writeFile(path.join(PUBLIC_DIR, 'favicon.ico'), toIco(ico48, 48))
+
+    // favicon.svg — data-URI embedded raster inside an SVG wrapper
+    const svg64 = await source.clone().resize(128, 128).png().toBuffer()
+    const svgContent = [
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">',
+      `<image width="128" height="128" href="data:image/png;base64,${svg64.toString('base64')}" />`,
+      '</svg>',
+    ].join('')
+    await writeFile(path.join(PUBLIC_DIR, 'favicon.svg'), svgContent, 'utf8')
+
+    // PWA icons
+    await source.clone().resize(192, 192).png().toFile(path.join(PUBLIC_DIR, 'icon-192x192.png'))
+    await source.clone().resize(512, 512).png().toFile(path.join(PUBLIC_DIR, 'icon-512x512.png'))
+
+    // Maskable icon — 10% padding on each side over a dark background
+    const maskSize = 512
+    const maskPad = Math.round(maskSize * 0.1)
+    const innerSize = maskSize - maskPad * 2
+    const innerBuf = await source.clone().resize(innerSize, innerSize).png().toBuffer()
+    await sharp({
+      create: { width: maskSize, height: maskSize, channels: 4, background: { r: 10, g: 10, b: 26, alpha: 1 } },
+    })
+      .composite([{ input: innerBuf, left: maskPad, top: maskPad }])
+      .png()
+      .toFile(path.join(PUBLIC_DIR, 'icon-maskable-512x512.png'))
+
+    console.info('[telecast] avatar favicon: generated favicon.ico, favicon.svg, and PWA icons from channel avatar')
+  }
+  catch (err) {
+    console.warn('[telecast] avatar favicon: generation failed, keeping existing files')
+    console.warn(err)
+  }
+}
+
+/**
+ * Pack a single PNG buffer into a minimal ICO file.
+ * ICO header (6 bytes) + 1 directory entry (16 bytes) + PNG data.
+ */
+function toIco(pngBuffer: Buffer, size: number): Buffer {
+  const headerSize = 6
+  const entrySize = 16
+  const dataOffset = headerSize + entrySize
+
+  const header = Buffer.alloc(headerSize)
+  header.writeUInt16LE(0, 0) // reserved
+  header.writeUInt16LE(1, 2) // ICO type
+  header.writeUInt16LE(1, 4) // 1 image
+
+  const entry = Buffer.alloc(entrySize)
+  entry.writeUInt8(size >= 256 ? 0 : size, 0) // width (0 = 256)
+  entry.writeUInt8(size >= 256 ? 0 : size, 1) // height
+  entry.writeUInt8(0, 2) // palette
+  entry.writeUInt8(0, 3) // reserved
+  entry.writeUInt16LE(1, 4) // color planes
+  entry.writeUInt16LE(32, 6) // bits per pixel
+  entry.writeUInt32LE(pngBuffer.length, 8) // data size
+  entry.writeUInt32LE(dataOffset, 12) // data offset
+
+  return Buffer.concat([header, entry, pngBuffer])
+}
+
 async function run() {
   const shouldGenerateOgImage = process.argv.includes('--og-image')
+  const shouldGenerateFavicon = process.argv.includes('--favicon')
 
   const remoteSnapshot = await buildRemoteStaticSnapshot()
 
@@ -664,6 +751,13 @@ async function run() {
   console.info(`[telecast] mirrored media urls: ${stats.resolvedCount}, new downloads: ${stats.downloadedCount}`)
 
   await generateImageMeta()
+
+  if (shouldGenerateFavicon) {
+    await generateFaviconFromAvatar(mirroredSnapshot.root)
+  }
+  else {
+    console.info('[telecast] favicon generation skipped pass --favicon to generate from channel avatar')
+  }
 
   if (shouldGenerateOgImage) {
     const ogResult = await generateOgImageFromChannel(mirroredSnapshot.root)
