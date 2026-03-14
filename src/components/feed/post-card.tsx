@@ -8,8 +8,8 @@ import { motion } from 'motion/react'
 import { Badge } from '@/components/ui/badge'
 import { localizePath } from '@/lib/i18n'
 import { formatPostTimestamp } from '@/lib/time'
-import { AnimatedMetricNumber } from './animated-metric-number'
 import { feedItemVariants } from './animated-feed'
+import { AnimatedMetricNumber } from './animated-metric-number'
 
 interface PostCardProps {
   post: ChannelPost

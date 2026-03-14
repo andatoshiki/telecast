@@ -3,7 +3,7 @@ name: Generate Pagespeed Metrics
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 0"
+    - cron: '0 0 * * 0'
   push:
     branches:
       - master
@@ -21,8 +21,8 @@ jobs:
         with:
           filename: .github/assets/pagespeed-metrics.svg
           token: ${{ secrets.GITHUB_TOKEN }}
-          committer_message: "docs(readme): update pagespeed metrics [skip ci]"
-          base: ""
+          committer_message: 'docs(readme): update pagespeed metrics [skip ci]'
+          base: ''
           plugin_pagespeed: yes
           plugin_pagespeed_detailed: yes
           plugin_pagespeed_url: https://tg.toshiki.dev

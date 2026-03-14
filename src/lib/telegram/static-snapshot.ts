@@ -64,7 +64,7 @@ function createSnapshotFetchTracker(host: string, channel: string): SnapshotFetc
       requestCount += 1
       const line = formatLine(cursor)
       if (isTty) {
-        process.stdout.write(`\x1b[2K\r${line}`)
+        process.stdout.write(`\x1B[2K\r${line}`)
       }
       else {
         console.info(line)
