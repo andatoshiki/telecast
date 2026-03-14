@@ -167,10 +167,6 @@ export async function readGeneratedStaticSnapshot() {
   }
 }
 
-export function getGeneratedStaticSnapshotPath() {
-  return GENERATED_SNAPSHOT_PATH
-}
-
 export function getStaticSnapshot() {
   if (!snapshotPromise) {
     snapshotPromise = readGeneratedStaticSnapshot()

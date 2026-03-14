@@ -27,29 +27,6 @@ export interface AppConfig {
   analytics: AnalyticsConfig
 }
 
-export function safeDecodeURIComponent(input: string) {
-  try {
-    return decodeURIComponent(input)
-  }
-  catch {
-    return input
-  }
-}
-
-export function getBaseSiteUrl(origin: string) {
-  const configuredSite = SITE_CONSTANTS.siteUrl
-  if (configuredSite.startsWith('http://') || configuredSite.startsWith('https://')) {
-    try {
-      return new URL(configuredSite).origin
-    }
-    catch {
-      return origin
-    }
-  }
-
-  return origin
-}
-
 export function buildStaticProxyUrl(staticProxy: string, rawUrl: string) {
   const input = rawUrl.trim()
   if (!input || !staticProxy) {

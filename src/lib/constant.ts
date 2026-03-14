@@ -1,4 +1,4 @@
-export interface MediaMirrorConfig {
+interface MediaMirrorConfig {
   directory: string
   userAgent: string
 }
@@ -24,7 +24,7 @@ export interface CloudFlareConfig {
   transformPrefix: string
 }
 
-export interface SiteConstantConfig {
+interface SiteConstantConfig {
   channel: string
   locale: string
   timezone: string

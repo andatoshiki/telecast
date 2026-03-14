@@ -19,14 +19,7 @@ export const jaMessages: LocaleMessages = {
     page: 'ページ',
   },
   sidebar: {
-    telegramFeed: 'Telegram フィード',
-    command: 'コマンド',
     language: '言語',
-  },
-  localeNames: {
-    en: '英語',
-    ja: '日本語',
-    zh: '中国語',
   },
   external: {
     rss: 'RSS',
@@ -77,7 +70,6 @@ export const jaMessages: LocaleMessages = {
     noMatches: 'このクエリに一致する結果はありません。',
     openFullResults: '検索結果ページを開く',
     enterKey: 'Enter',
-    commandOpenHint: 'コマンドパレットを開く (Cmd/Ctrl+K)',
   },
   searchPanel: {
     loadingIndex: '検索インデックスを読み込み中...',

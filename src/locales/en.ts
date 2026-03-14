@@ -17,14 +17,7 @@ export interface LocaleMessages {
     page: string
   }
   sidebar: {
-    telegramFeed: string
-    command: string
     language: string
-  }
-  localeNames: {
-    en: string
-    ja: string
-    zh: string
   }
   external: {
     rss: string
@@ -75,7 +68,6 @@ export interface LocaleMessages {
     noMatches: string
     openFullResults: string
     enterKey: string
-    commandOpenHint: string
   }
   searchPanel: {
     loadingIndex: string
@@ -116,14 +108,7 @@ export const enMessages: LocaleMessages = {
     page: 'Page',
   },
   sidebar: {
-    telegramFeed: 'Telegram feed',
-    command: 'Command',
     language: 'Languages',
-  },
-  localeNames: {
-    en: 'English',
-    ja: 'Japanese',
-    zh: 'Chinese',
   },
   external: {
     rss: 'RSS',
@@ -174,7 +159,6 @@ export const enMessages: LocaleMessages = {
     noMatches: 'No matches for this query.',
     openFullResults: 'Open full results page',
     enterKey: 'Enter',
-    commandOpenHint: 'open command palette (Cmd/Ctrl+K)',
   },
   searchPanel: {
     loadingIndex: 'Loading search index...',

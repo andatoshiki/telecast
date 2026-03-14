@@ -80,7 +80,7 @@ export function localizePath(locale: AppLocale, path: string) {
   return `/${locale}${normalizedPath}`
 }
 
-export function getLocaleFromPath(pathname: string): AppLocale | null {
+function getLocaleFromPath(pathname: string): AppLocale | null {
   const [pathnameOnly] = pathname.split(/[?#]/, 1)
   const segments = pathnameOnly.split('/').filter(Boolean)
   const locale = segments[0]

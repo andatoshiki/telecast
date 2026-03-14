@@ -19,14 +19,7 @@ export const zhMessages: LocaleMessages = {
     page: '页面',
   },
   sidebar: {
-    telegramFeed: 'Telegram 频道',
-    command: '命令',
     language: '语言',
-  },
-  localeNames: {
-    en: '英文',
-    ja: '日文',
-    zh: '中文',
   },
   external: {
     rss: 'RSS',
@@ -77,7 +70,6 @@ export const zhMessages: LocaleMessages = {
     noMatches: '没有匹配此查询的结果。',
     openFullResults: '打开完整结果页',
     enterKey: 'Enter',
-    commandOpenHint: '打开命令面板 (Cmd/Ctrl+K)',
   },
   searchPanel: {
     loadingIndex: '正在加载搜索索引...',
