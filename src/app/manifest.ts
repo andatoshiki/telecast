@@ -2,6 +2,8 @@ import type { MetadataRoute } from 'next'
 import { getAppConfig } from '@/lib/config'
 import { enMessages } from '@/locales/en'
 
+export const dynamic = 'force-static'
+
 export default function manifest(): MetadataRoute.Manifest {
   const config = getAppConfig()
   const { seo } = config
