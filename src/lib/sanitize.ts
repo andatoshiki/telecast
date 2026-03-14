@@ -81,14 +81,14 @@ export function renderInlineMarkdown(input: string) {
   let html = escapeHtml(withCodePlaceholders)
 
   html = html
-    .replace(/\[([^\]\n]+?)\]\(([^)\s]+?)\)/g, (_match, label: string, href: string) => (
+    .replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/g, (_match, label: string, href: string) => (
       `<a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a>`
     ))
-    .replace(/\*\*([^*\n]+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/__([^_\n]+?)__/g, '<strong>$1</strong>')
-    .replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>')
-    .replace(/(^|[^_])_([^_\n]+?)_(?!_)/g, '$1<em>$2</em>')
-    .replace(/~~([^~\n]+?)~~/g, '<s>$1</s>')
+    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/__([^_\n]+)__/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
+    .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, '$1<em>$2</em>')
+    .replace(/~~([^~\n]+)~~/g, '<s>$1</s>')
     .replace(/\n{2,}/g, '<br /><br />')
     .replace(/\n/g, '<br />')
 
