@@ -151,13 +151,15 @@ export function PageFrame({
                 ? (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <SidebarBackButton
-                          label={resolvedMessages.nav.back}
-                          buttonClassName={sidebarIconButtonClass}
-                          iconClassName={sidebarIconGlyphClass}
-                        />
+                        <div>
+                          <SidebarBackButton
+                            label={resolvedMessages.post.backToFeed}
+                            buttonClassName={sidebarIconButtonClass}
+                            iconClassName={sidebarIconGlyphClass}
+                          />
+                        </div>
                       </TooltipTrigger>
-                      <TooltipContent side="right">{resolvedMessages.nav.back}</TooltipContent>
+                      <TooltipContent side="right">{resolvedMessages.post.backToFeed}</TooltipContent>
                     </Tooltip>
                   )
                 : null}

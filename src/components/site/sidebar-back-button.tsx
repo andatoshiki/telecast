@@ -1,6 +1,5 @@
 'use client'
 
-import type { Ref } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -10,15 +9,13 @@ interface SidebarBackButtonProps {
   label: string
   buttonClassName: string
   iconClassName: string
-  ref?: Ref<HTMLButtonElement>
 }
 
-export function SidebarBackButton({ label, buttonClassName, iconClassName, ref }: SidebarBackButtonProps) {
+export function SidebarBackButton({ label, buttonClassName, iconClassName }: SidebarBackButtonProps) {
   const router = useRouter()
 
   return (
     <Button
-      ref={ref}
       variant="ghost"
       className={buttonClassName}
       aria-label={label}
