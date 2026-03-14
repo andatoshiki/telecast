@@ -614,6 +614,8 @@ async function writeStaticSearchIndex(snapshot: StaticSnapshot) {
   const posts = snapshot.pages.flatMap(page => page.channel.posts)
   const { documents } = buildPostSearchDataset(posts)
 
+  console.info(`[telecast] building search index: ${documents.length} documents from ${posts.length} posts`)
+
   const index = lunr(function buildIndex() {
     this.ref('id')
     this.field('title', { boost: 8 })
@@ -633,6 +635,7 @@ async function writeStaticSearchIndex(snapshot: StaticSnapshot) {
 
   await mkdir(path.dirname(SEARCH_INDEX_OUTPUT_PATH), { recursive: true })
   await writeFile(SEARCH_INDEX_OUTPUT_PATH, JSON.stringify(payload, null, 2), 'utf8')
+  console.info(`[telecast] search index written to ${SEARCH_INDEX_OUTPUT_PATH}`)
 }
 
 function hasPosts(snapshot: StaticSnapshot | null | undefined) {
