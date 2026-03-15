@@ -20,6 +20,51 @@ const metaKeywords = Array.from(new Set(
     .map(keyword => keyword.replace(/^#/, '').trim())
     .filter(Boolean),
 ))
+const devServiceWorkerCleanupScript = `(() => {
+  const localHosts = ['localhost', '127.0.0.1', '[::1]']
+  if (!localHosts.includes(window.location.hostname)) {
+    return
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    return
+  }
+
+  const reloadKey = 'telecast:dev-sw-reset'
+  const clearCaches = async () => {
+    if (!('caches' in window)) {
+      return
+    }
+
+    const keys = await caches.keys()
+    await Promise.all(
+      keys
+        .filter(key => key.startsWith('telecast-'))
+        .map(key => caches.delete(key)),
+    )
+  }
+
+  navigator.serviceWorker.getRegistrations()
+    .then(async (registrations) => {
+      if (registrations.length === 0) {
+        sessionStorage.removeItem(reloadKey)
+        await clearCaches()
+        return
+      }
+
+      await Promise.all(registrations.map(registration => registration.unregister()))
+      await clearCaches()
+
+      if (navigator.serviceWorker.controller && !sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, '1')
+        window.location.reload()
+        return
+      }
+
+      sessionStorage.removeItem(reloadKey)
+    })
+    .catch(() => {})
+})()`
 
 export const viewport: Viewport = {
   themeColor: [
@@ -81,6 +126,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <Script id="dev-service-worker-cleanup" strategy="beforeInteractive">
+          {devServiceWorkerCleanupScript}
+        </Script>
         {config.pwa && <link rel="apple-touch-icon" href="/icon-192x192.png" />}
       </head>
       <body>
