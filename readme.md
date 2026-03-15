@@ -1,152 +1,227 @@
 # Telecast
 
-> A standalone Next.js microblog app that mirrors Telegram channel content into static snapshot-driven pages with search, tags, RSS, and local media files.
+> [!WARNING]
+> This documentation is currently a work in progress. Some sections may be incomplete or subject to change.
+
+> A self-hosted, statically-generated microblog that mirrors your Telegram channel into a fast, searchable, and beautifully designed website built with Next.js, React, shadcn/ui, and Tailwind CSS.
 
 [简体中文](./readme-zh.md)
 
-## 1: Product summary
+## 1: Why this exists
 
-### 1.1: What this app is
+This is a complete wheel rebuild of [BroadcastChannel](https://github.com/miantiao-me/BroadcastChannel) created by [@miantiao-me](https://github.com/miantiao-me). The original works perfectly well, but I didn't like the UI, it's SSR on Astro (a framework I wasn't familiar with), and I'm a loyal SSG fanboy — static sites are easier to host anywhere, not just Cloudflare Pages or Vercel. So I rebuilt it from scratch in Next.js with DPlayer video playback, a Telegram-native image grid layout, Lunr.js full-text search, and a Twitter-like responsive feed timeline.
 
-Telecast is a standalone application built with Next.js App Router, React, and shadcn/ui.
-It converts Telegram channel content into a fast website that supports multi-locale navigation, static search, and SEO-friendly routes.
+**Is it necessary though**? **Absolutely not**, but it's a fun rebuild to adhere with my personal aesthetic visual preference and also a way for me to learn Next.js v16.x.
 
-### 1.2: Who should use this app
+## 2: Quick start
 
-1. Creators who publish to Telegram and want a website without manual reposting.
-2. Teams that prefer static-first output with predictable deployment behavior.
-3. Operators who need scheduled refresh and low operational overhead.
+### 2.1: Requirements
 
-### 1.3: Main capabilities
+1. Node.js `>=22`
+2. pnpm `>=10`
 
-1. Telegram channel content ingestion.
-2. Static snapshot generation and cursor-based pagination.
-3. Local media mirroring into `public/media`.
-4. Full-text search index generation with Lunr.
-5. Localized routes for `en`, `ja`, and `zh`.
-6. RSS and sitemap endpoints.
-7. Tag cloud and search pages backed by generated artifacts.
-
-## 2: Technology and architecture
-
-### 2.1: Stack overview
-
-1. Framework: Next.js 16 App Router.
-2. UI: React 19, shadcn/ui, Radix UI, Tailwind CSS.
-3. Parsing and fetch: `cheerio`, `ofetch`, `lru-cache`.
-4. Search: Lunr static index in `public/search/index.json`.
-5. Build tooling: TypeScript, ESLint, pnpm.
-
-### 2.2: Content pipeline
-
-#### 2.2.1: Fetch stage
-
-Telegram channel HTML is fetched from the configured host and parsed into post objects.
-
-#### 2.2.2: Transform stage
-
-The parser normalizes links, tags, emojis, reactions, media URLs, and code blocks.
-
-#### 2.2.3: Snapshot stage
-
-The app writes:
-
-1. `src/generated/static-snapshot.json` for page data.
-2. `public/search/index.json` for client-side search.
-
-#### 2.2.4: Mirror stage
-
-Remote media URLs are downloaded and rewritten to local paths under `public/media`.
-
-### 2.3: Runtime model
-
-1. Build-time sync prepares data artifacts.
-2. App routes read generated snapshot files.
-3. Locale middleware redirects non-prefixed URLs to the default locale.
-
-### 2.4: Important directories
-
-1. `src/app`: pages, metadata routes, RSS, sitemap, localized routes.
-2. `src/lib`: parser, config, i18n, snapshot logic, search helpers.
-3. `src/generated`: generated static snapshot file.
-4. `scripts`: sync and media mirror pipeline.
-5. `public/search`: generated search index.
-6. `public/media`: mirrored media assets.
-
-## 3: Quick start
-
-### 3.1: Requirements
-
-1. Node.js `>=22`.
-2. `pnpm` `>=10`.
-
-### 3.2: Install dependencies
+### 2.2: Install and run
 
 ```bash
 pnpm install
-```
-
-### 3.3: Start development server
-
-```bash
 pnpm dev
 ```
 
-The app runs on port `4321`.
+The development server starts on port `4321`.
 
-### 3.4: Build and start production server
+### 2.3: Build for production
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-### 3.5: Linting
+The build command runs `pnpm sync --og-image --favicon` automatically before `next build`, so all generated artifacts are created in a single step.
 
-```bash
-pnpm lint
-pnpm lint:fix
-```
+## 3: Configuration
 
-## 4: Configuration
+All configuration lives in a single file: `src/lib/constant.ts`. There are no `.env` files or runtime environment variables. Fork the repo, edit this file, deploy.
 
-### 4.1: Configuration model
+### 3.1: Channel and site identity
 
-This app is configured through `src/lib/constant.ts` rather than runtime `.env` variables.
-
-### 4.2: Core site constants
-
-Edit these keys in `SITE_CONSTANTS`:
-
-1. `channel`
-2. `telegramHost`
-3. `siteUrl`
-4. `locale`
-5. `timezone`
-6. `reactionsEnabled`
-
-### 4.3: SEO and analytics constants
-
-1. `seo.title`, `seo.description`, `seo.ogImage`, `seo.keywords`, and `seo.author`.
-2. `analytics.googleAnalyticsId`.
-3. `analytics.umamiScriptUrl` and `analytics.umamiWebsiteId`.
-
-### 4.4: Static build and media constants
-
-1. `maxPages` controls crawl depth.
-2. `mediaMirror.directory` controls local media path.
-3. `mediaMirror.userAgent` controls fetch user agent.
-
-### 4.5: Example constants patch
+| Key | Type | Description |
+|-----|------|-------------|
+| `channel` | `string` | Telegram channel username without `@`. This is the channel whose content is mirrored. |
+| `siteUrl` | `string` | Canonical base URL of the published site (e.g. `https://tg.example.com`). Used for SEO, RSS, and sitemap generation. |
+| `telegramHost` | `string` | Telegram web host for fetching channel HTML. Default is `t.me`. |
+| `locale` | `string` | Default locale. Supported values: `en`, `ja`, `zh`. |
+| `timezone` | `string` | IANA timezone for date formatting (e.g. `UTC`, `America/New_York`, `Asia/Tokyo`). |
 
 ```ts
-export const SITE_CONSTANTS = {
-  channel: 'your_channel_name',
-  telegramHost: 't.me',
-  siteUrl: 'https://example.com',
+channel: 'your_channel',
+siteUrl: 'https://tg.example.com',
+telegramHost: 't.me',
+locale: 'en',
+timezone: 'UTC',
+```
+
+### 3.2: Social links
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `website` | `string` | Author or organization website URL. |
+| `twitter` | `string` | Twitter/X username only, no URL prefix. |
+| `github` | `string` | GitHub username only. |
+| `telegram` | `string` | Telegram username for the sidebar link. |
+| `mastodon` | `string` | Mastodon handle without protocol (e.g. `mastodon.social/@user`). |
+| `bluesky` | `string` | Bluesky handle (e.g. `user.bsky.social`). |
+
+Leave any field as an empty string to hide it from the sidebar.
+
+```ts
+website: 'https://example.com',
+twitter: 'username',
+github: 'username',
+telegram: 'username',
+mastodon: 'mastodon.social/@username',
+bluesky: 'username.bsky.social',
+```
+
+### 3.3: Display options
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `hideDescription` | `boolean` | When `true`, the channel description block below the header is hidden. |
+| `reactionsEnabled` | `boolean` | When `true`, Telegram-style emoji reactions are shown on posts. |
+| `pwa` | `boolean` | When `true`, enables service worker registration, web app manifest, and offline caching. |
+| `customBanner` | `string` | Inline markdown rendered as a banner above the main content. Leave empty to disable. |
+| `customFooter` | `string` | Inline markdown that replaces the default footer. Leave empty for the default. |
+| `rssBeautify` | `boolean` | When `true`, RSS XML output includes XSLT styling for browser readability. |
+
+```ts
+hideDescription: false,
+reactionsEnabled: true,
+pwa: true,
+customBanner: '**Welcome!** [Source on GitHub](https://github.com/you/repo)',
+customFooter: '',
+rssBeautify: true,
+```
+
+### 3.4: Cloudflare image transforms
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `cloudFlare.transform` | `boolean` | Enable Cloudflare image transform delivery for mirrored images under `/media/*`. |
+| `cloudFlare.transformPrefix` | `string` | URL prefix for Cloudflare transforms (e.g. `/cdn-cgi/image/format=auto,quality=85/`). |
+
+This is completely optional. When `cloudFlare.transform` is `true`, the build-time sync rewrites static media paths from their default `/media/…` form to the prefixed version (`/cdn-cgi/image/format=auto,quality=85/media/…`). The rewrite happens at build time only — there is no runtime path conversion. If you are not deploying behind Cloudflare, leave this set to `false` and media paths will stay as plain `/media/*` URLs.
+
+```ts
+cloudFlare: {
+  transform: false,
+  transformPrefix: '/cdn-cgi/image/format=auto,quality=85/',
+},
+```
+
+### 3.5: Static proxy
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `staticProxy` | `string` | Proxy base URL for Telegram-origin media at runtime. Leave empty unless you need a runtime proxy. |
+
+Most deployments should leave this empty since media is mirrored locally at build time.
+
+### 3.6: SEO
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `seo.title` | `string` | Site title for browser tabs and search results. |
+| `seo.description` | `string` | Meta description for search engines and social previews. |
+| `seo.ogImage` | `string` | Open Graph image path (e.g. `/og-auto.png`). Generated automatically with `--og-image`. |
+| `seo.keywords` | `string[]` | Array of SEO keywords for meta tags. |
+| `seo.author` | `string` | Author name for meta tags and structured data. |
+| `seo.noIndex` | `boolean` | When `true`, emits `noindex` in robots meta. |
+| `seo.noFollow` | `boolean` | When `true`, emits `nofollow` in robots meta. |
+
+```ts
+seo: {
+  title: 'My Telecast',
+  description: 'Posts from my Telegram channel.',
+  ogImage: '/og-auto.png',
+  keywords: ['telegram', 'microblog', 'my-channel'],
+  author: 'Your Name',
+  noIndex: false,
+  noFollow: false,
+},
+```
+
+### 3.7: Analytics
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `analytics.googleAnalyticsId` | `string` | Google Analytics 4 measurement ID (e.g. `G-XXXXXXXXXX`). Leave empty to disable. |
+| `analytics.umamiScriptUrl` | `string` | Self-hosted Umami analytics script URL. Leave empty to disable. |
+| `analytics.umamiWebsiteId` | `string` | Umami website ID for this site. |
+
+```ts
+analytics: {
+  googleAnalyticsId: '',
+  umamiScriptUrl: '',
+  umamiWebsiteId: '',
+},
+```
+
+### 3.8: Build and sync limits
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `maxPages` | `number` | Maximum Telegram snapshot pages to fetch during sync. Each page contains roughly 20 posts. Default is `50`. |
+| `mediaMirror.directory` | `string` | Public URL prefix for mirrored media files (e.g. `/media`). |
+| `mediaMirror.userAgent` | `string` | User-Agent string used when downloading media from Telegram. |
+
+```ts
+maxPages: 50,
+mediaMirror: {
+  directory: '/media',
+  userAgent: 'TelecastStaticSync/1.0',
+},
+```
+
+### 3.9: Full example
+
+```ts
+export const SITE_CONSTANTS: SiteConstantConfig = {
+  channel: 'your_channel',
   locale: 'en',
   timezone: 'UTC',
+  siteUrl: 'https://tg.example.com',
+  telegramHost: 't.me',
+  staticProxy: '',
+  cloudFlare: {
+    transform: false,
+    transformPrefix: '/cdn-cgi/image/format=auto,quality=85/',
+  },
+  hideDescription: false,
   reactionsEnabled: true,
+  pwa: true,
+  website: 'https://example.com',
+  twitter: 'username',
+  github: 'username',
+  telegram: 'your_channel',
+  mastodon: '',
+  bluesky: '',
+  customBanner: '',
+  customFooter: '',
+  rssBeautify: true,
+  seo: {
+    title: 'My Telecast',
+    description: 'Posts from my Telegram channel.',
+    ogImage: '/og-auto.png',
+    keywords: ['telegram', 'microblog'],
+    author: 'Your Name',
+    noIndex: false,
+    noFollow: false,
+  },
+  analytics: {
+    googleAnalyticsId: '',
+    umamiScriptUrl: '',
+    umamiWebsiteId: '',
+  },
   maxPages: 50,
   mediaMirror: {
     directory: '/media',
@@ -155,154 +230,47 @@ export const SITE_CONSTANTS = {
 }
 ```
 
-## 5: Sync command reference
+## 4: Sync command
 
-### 5.1: Base command
+### 4.1: Usage
 
 ```bash
-pnpm sync
+pnpm sync [flags]
 ```
 
-### 5.2: Available flags
+### 4.2: Flags
 
-1. `--og-image`: also generate `public/og-auto.png`.
+| Flag | Effect |
+|------|--------|
+| `--og-image` | Generate `public/og-auto.png` from channel metadata. |
+| `--favicon` | Generate `favicon.ico`, `favicon.svg`, and PWA icon PNGs from the channel avatar. |
 
-### 5.3: Generated artifacts
+Both flags are used in the default `build` script in `package.json`:
 
-1. `src/generated/static-snapshot.json`
-2. `public/search/index.json`
-3. `public/media/*` files
+```json
+"build": "pnpm sync --og-image --favicon && next build --webpack"
+```
 
-### 5.4: Sync behavior
+> [!NOTE]
+> These flags are entirely optional. They auto-generate an Open Graph image and favicons from your Telegram channel avatar so you can deploy without creating any graphics manually. If you prefer to use your own hand-designed OG image or favicon files, remove the corresponding flag from the `build` script in `package.json` and place your custom files in `public/` directly.
 
-1. Sync always fetches fresh remote content and rewrites generated snapshot and index files.
-2. If remote fetch returns no posts the sync exits with an error and does not write empty content.
+### 4.3: Generated artifacts
 
-## 6: Routing and public endpoints
+1. `src/generated/static-snapshot.json` — page data for all routes.
+2. `public/search/index.json` — pre-built Lunr full-text search index.
+3. `public/media/*` — locally mirrored media files.
+4. `public/og-auto.png` — Open Graph image (when `--og-image` is passed).
+5. `public/favicon.ico`, `public/favicon.svg`, `public/icon-*.png` — favicons (when `--favicon` is passed).
 
-### 6.1: Locale routes
+## 5: Deployment
 
-1. `/{locale}`
-2. `/{locale}/before/{cursor}`
-3. `/{locale}/after/{cursor}`
-4. `/{locale}/posts/{id}`
-5. `/{locale}/search`
-6. `/{locale}/tags`
+> [!WARNING]
+> This section is currently a work in progress.
 
-### 6.2: Metadata and feed routes
+## 6: License
 
-1. `/robots.txt`
-2. `/rss.xml`
-3. `/rss.json`
-4. `/sitemap.xml`
-5. `/rules/prefetch.json`
+This project is licensed under [AGPL-3.0](./LICENSE).
 
-### 6.3: Locale middleware behavior
-
-Requests without locale prefix are redirected to the default locale route.
-
-## 7: Deployment
-
-### 7.1: Vercel
-
-1. Import the repository into Vercel.
-2. Keep default Next.js build behavior.
-3. Every deployment rebuilds snapshot data through `prebuild`.
-
-### 7.2: Cloudflare
-
-1. Deploy with a pipeline that supports Next.js server output.
-2. Ensure build runs `pnpm build` so sync artifacts are refreshed.
-3. Validate that generated `public/media` and `public/search/index.json` are included in deployment output.
-
-### 7.3: Container deployment
-
-1. Build image with project Dockerfile or equivalent.
-2. Run Node server on port `4321`.
-3. Redeploy on schedule to keep data fresh.
-
-## 8: Scheduled updates and cron strategy
-
-### 8.1: Why scheduling is required
-
-Data is generated at build time, so updates require a new deployment.
-
-### 8.2: Vercel scheduling pattern
-
-1. Create a deploy hook.
-2. Create a protected cron endpoint.
-3. Configure Vercel cron to call that endpoint.
-
-### 8.3: Cloudflare scheduling pattern
-
-1. Create a Pages deploy hook.
-2. Create a Worker with a Cron Trigger.
-3. Have the Worker call the deploy hook URL.
-
-### 8.4: Unified multi-platform pattern
-
-Use one GitHub Actions scheduled workflow to trigger both deploy hooks.
-
-### 8.5: Security recommendations
-
-1. Protect cron endpoints with a shared secret.
-2. Keep deploy hooks in platform secrets.
-3. Log sync failures and redeploy failures separately.
-
-## 9: Operations and troubleshooting
-
-### 9.1: Empty snapshot or missing posts
-
-1. Check network access to `telegramHost`.
-2. Verify channel visibility and accessibility.
-3. Run `pnpm sync` and inspect logs.
-
-### 9.2: Too few tags
-
-Tags are extracted only from fetched posts.
-If fetch fails sync exits with an error and generated content stays unchanged.
-
-### 9.3: Robots route conflict
-
-Do not define both `public/robots.txt` and `src/app/robots.ts` for the same app.
-
-### 9.4: Turbopack panic
-
-If Turbopack crashes in your environment, use webpack build mode for production stability.
-
-### 9.5: Image optimization expectations
-
-1. Post-body images are rendered from generated HTML.
-2. Local mirroring reduces external dependencies.
-3. `next/image` is not automatic for HTML injected through `dangerouslySetInnerHTML`.
-
-## 10: Maintenance workflow
-
-### 10.1: Recommended update cycle
-
-1. Update constants.
-2. Run sync.
-3. Run lint and build.
-4. Deploy.
-
-### 10.2: Validation checklist
-
-1. Home and locale routes load correctly.
-2. Search results are available.
-3. Tag page reflects expected hashtags.
-4. RSS and sitemap endpoints are valid.
-5. Mirrored media loads from `public/media`.
-
-### 10.3: Release and commits
-
-Project scripts include commitlint and changelog tooling for conventional release workflow.
-
-## 11: License
-
-### 11.1: License terms
-
-This project is licensed under AGPL-3.0.
-
-## 12: Page Speed Insights and SEO
+## 7: Page Speed Insights
 
 ![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@master/.github/assets/pagespeed-metrics.svg)

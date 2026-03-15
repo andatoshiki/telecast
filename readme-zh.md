@@ -1,161 +1,228 @@
 # Telecast
 
-> 一个独立的 Next.js 微博客应用，可将 Telegram 频道内容镜像为静态快照页面，并支持搜索、标签、RSS 与媒体本地化。
+> [!WARNING]
+> 本文档目前仍在编写中，部分章节可能不完整或存在变动。
+
+> 一个自托管的静态生成微博客，将 Telegram 频道镜像为快速、可搜索、UI 精美的网站，基于 Next.js、React、shadcn/ui 和 Tailwind CSS 构建。
 
 [English](./readme.md)
 
-## 1: 产品概述
+## 1: 为什么做这个项目
 
-### 1.1: 应用定位
+这是对 [BroadcastChannel](https://github.com/miantiao-me/BroadcastChannel)（由 [@miantiao-me](https://github.com/miantiao-me) 开发）的完全重写。原项目本身运行得很好，但我不太喜欢它的 UI 设计，而且原项目是基于 Astro 的 SSR 方案（一个我完全不熟悉的框架），而我是一个坚定的 SSG 忠实拥护者——静态站点可以更轻松地部署到各种平台，而不仅限于 Cloudflare Pages 或 Vercel。所以我用 Next.js 从零重写，加入了 DPlayer 视频播放、仿 Telegram 原生的图片网格布局、基于 Lunr.js 的全文搜索，以及类 Twitter 的响应式时间线。
 
-Telecast 是基于 Next.js App Router、React 和 shadcn/ui 的独立应用。
-它将 Telegram 频道内容转换为可搜索、可部署、可持续更新的网站。
+**有必要吗**？**完全没有**，但这是一次有趣的重写，既符合我个人的审美偏好，也是学习 Next.js v16.x 的方式。
 
-### 1.2: 适用场景
+## 2: 快速开始
 
-1. 想把 Telegram 频道自动发布到网站的个人与团队。
-2. 需要静态优先输出与可预测部署流程的项目。
-3. 需要定时刷新内容并降低运维复杂度的站点。
+### 2.1: 运行要求
 
-### 1.3: 主要能力
+1. Node.js `>=22`
+2. pnpm `>=10`
 
-1. Telegram 频道内容抓取与解析。
-2. 静态快照生成与基于游标的分页。
-3. 媒体文件镜像到 `public/media`。
-4. 基于 Lunr 的静态全文搜索索引。
-5. `en`、`ja`、`zh` 多语言路由。
-6. RSS 与 sitemap 元数据路由。
-7. 基于快照数据的标签页与搜索页。
-
-## 2: 技术栈与架构
-
-### 2.1: 技术栈
-
-1. 框架：Next.js 16 App Router。
-2. UI：React 19、shadcn/ui、Radix UI、Tailwind CSS。
-3. 抓取与解析：`ofetch`、`cheerio`、`lru-cache`。
-4. 搜索：Lunr 静态索引。
-5. 工具链：TypeScript、ESLint、pnpm。
-
-### 2.2: 内容处理流水线
-
-#### 2.2.1: 抓取阶段
-
-从配置的 Telegram Host 拉取频道页面并解析帖子结构。
-
-#### 2.2.2: 转换阶段
-
-统一处理链接、标签、表情、反应、媒体地址和代码块高亮。
-
-#### 2.2.3: 快照阶段
-
-写入以下文件：
-
-1. `src/generated/static-snapshot.json`
-2. `public/search/index.json`
-
-#### 2.2.4: 媒体镜像阶段
-
-下载远端媒体并重写为本地路径 `public/media/*`。
-
-### 2.3: 运行模型
-
-1. 构建前执行同步脚本，生成内容产物。
-2. 页面从快照文件读取内容并渲染。
-3. 中间件将未带语言前缀的路径重定向到默认语言。
-
-### 2.4: 关键目录
-
-1. `src/app`：页面路由、RSS、sitemap、robots 与多语言页面。
-2. `src/lib`：配置、i18n、解析器、快照与搜索逻辑。
-3. `src/generated`：生成的快照文件。
-4. `scripts`：内容同步与媒体镜像脚本。
-5. `public/search`：搜索索引。
-6. `public/media`：媒体镜像文件。
-
-## 3: 快速开始
-
-### 3.1: 运行要求
-
-1. Node.js `>=22`。
-2. `pnpm` `>=10`。
-
-### 3.2: 安装依赖
+### 2.2: 安装并运行
 
 ```bash
 pnpm install
-```
-
-### 3.3: 启动开发环境
-
-```bash
 pnpm dev
 ```
 
-默认端口为 `4321`。
+开发服务器默认在端口 `4321` 启动。
 
-### 3.4: 生产构建与启动
+### 2.3: 生产构建
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-### 3.5: 代码检查
+构建命令会在 `next build` 之前自动执行 `pnpm sync --og-image --favicon`，所有生成产物一步完成。
 
-```bash
-pnpm lint
-pnpm lint:fix
-```
+## 3: 配置
 
-## 4: 配置方式
+所有配置集中在一个文件：`src/lib/constant.ts`。没有 `.env` 文件或运行时环境变量。Fork 仓库，编辑此文件，直接部署。
 
-### 4.1: 配置入口
+### 3.1: 频道与站点身份
 
-本项目主要通过 `src/lib/constant.ts` 中的 `SITE_CONSTANTS` 进行配置，而不是依赖运行时 `.env`。
-
-### 4.2: 站点核心配置
-
-重点字段如下：
-
-1. `channel`
-2. `telegramHost`
-3. `siteUrl`
-4. `locale`
-5. `timezone`
-6. `commentsEnabled`
-7. `reactionsEnabled`
-8. `tags`、`links`、`navs`
-
-### 4.3: SEO 与统计配置
-
-1. `seo.title`、`seo.description`、`seo.ogImage`、`seo.canonical`。
-2. `seo.robots` 与 `seo.googleBot`。
-3. `analytics.googleAnalyticsId`。
-4. `analytics.umamiScriptUrl` 与 `analytics.umamiWebsiteId`。
-
-### 4.4: 构建与镜像配置
-
-1. `staticBuild.maxPages`：抓取分页上限。
-2. `staticBuild.devRefreshMinutes`：开发模式刷新窗口。
-3. `mediaMirror.directory`：媒体本地目录。
-4. `mediaMirror.userAgent`：抓取时 User-Agent。
-
-### 4.5: 配置示例
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `channel` | `string` | Telegram 频道用户名，不带 `@`。要镜像的目标频道。 |
+| `siteUrl` | `string` | 站点的规范基础 URL（如 `https://tg.example.com`），用于 SEO、RSS 和 sitemap。 |
+| `telegramHost` | `string` | Telegram 网页主机，用于抓取频道 HTML。默认为 `t.me`。 |
+| `locale` | `string` | 默认语言。支持的值：`en`、`ja`、`zh`。 |
+| `timezone` | `string` | IANA 时区，用于日期格式化（如 `UTC`、`America/New_York`、`Asia/Tokyo`）。 |
 
 ```ts
-export const SITE_CONSTANTS = {
-  channel: 'your_channel_name',
-  telegramHost: 't.me',
-  siteUrl: 'https://example.com',
+channel: 'your_channel',
+siteUrl: 'https://tg.example.com',
+telegramHost: 't.me',
+locale: 'en',
+timezone: 'UTC',
+```
+
+### 3.2: 社交链接
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `website` | `string` | 作者或组织的网站 URL。 |
+| `twitter` | `string` | Twitter/X 用户名，不含 URL 前缀。 |
+| `github` | `string` | GitHub 用户名。 |
+| `telegram` | `string` | 侧边栏 Telegram 链接的用户名。 |
+| `mastodon` | `string` | Mastodon 地址，不含协议（如 `mastodon.social/@user`）。 |
+| `bluesky` | `string` | Bluesky 地址（如 `user.bsky.social`）。 |
+
+任何字段留空即可隐藏对应的侧边栏链接。
+
+```ts
+website: 'https://example.com',
+twitter: 'username',
+github: 'username',
+telegram: 'username',
+mastodon: 'mastodon.social/@username',
+bluesky: 'username.bsky.social',
+```
+
+### 3.3: 显示选项
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `hideDescription` | `boolean` | 为 `true` 时隐藏头部下方的频道描述。 |
+| `reactionsEnabled` | `boolean` | 为 `true` 时显示 Telegram 风格的 emoji 反应。 |
+| `pwa` | `boolean` | 为 `true` 时启用 Service Worker 注册、Web App Manifest 和离线缓存。 |
+| `customBanner` | `string` | 在主内容上方渲染的 Markdown 横幅。留空禁用。 |
+| `customFooter` | `string` | 替换默认页脚的 Markdown 内容。留空使用默认页脚。 |
+| `rssBeautify` | `boolean` | 为 `true` 时 RSS XML 输出包含 XSLT 样式，方便浏览器阅读。 |
+
+```ts
+hideDescription: false,
+reactionsEnabled: true,
+pwa: true,
+customBanner: '**欢迎！** [GitHub 源码](https://github.com/you/repo)',
+customFooter: '',
+rssBeautify: true,
+```
+
+### 3.4: Cloudflare 图片转换
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `cloudFlare.transform` | `boolean` | 为 `/media/*` 下的镜像图片启用 Cloudflare 图片转换。 |
+| `cloudFlare.transformPrefix` | `string` | Cloudflare 转换 URL 前缀（如 `/cdn-cgi/image/format=auto,quality=85/`）。 |
+
+此配置完全可选。当 `cloudFlare.transform` 为 `true` 时，构建同步会将静态媒体路径从默认的 `/media/…` 改写为带前缀的版本（`/cdn-cgi/image/format=auto,quality=85/media/…`）。改写仅发生在构建时，没有运行时路径转换。如果不在 Cloudflare 后部署，保持 `false` 即可，媒体路径将保持为普通的 `/media/*` URL。
+
+```ts
+cloudFlare: {
+  transform: false,
+  transformPrefix: '/cdn-cgi/image/format=auto,quality=85/',
+},
+```
+
+### 3.5: 静态代理
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `staticProxy` | `string` | Telegram 来源媒体的运行时代理 URL。除非需要运行时代理，否则留空。 |
+
+大多数部署应留空，因为媒体在构建时已本地镜像。
+
+### 3.6: SEO
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `seo.title` | `string` | 浏览器标签页和搜索结果中显示的站点标题。 |
+| `seo.description` | `string` | 搜索引擎和社交预览的 Meta 描述。 |
+| `seo.ogImage` | `string` | Open Graph 图片路径（如 `/og-auto.png`）。可通过 `--og-image` 自动生成。 |
+| `seo.keywords` | `string[]` | SEO 关键词数组。 |
+| `seo.author` | `string` | 用于 Meta 标签和结构化数据的作者名。 |
+| `seo.noIndex` | `boolean` | 为 `true` 时在 robots meta 中输出 `noindex`。 |
+| `seo.noFollow` | `boolean` | 为 `true` 时在 robots meta 中输出 `nofollow`。 |
+
+```ts
+seo: {
+  title: 'My Telecast',
+  description: '来自我的 Telegram 频道的帖子。',
+  ogImage: '/og-auto.png',
+  keywords: ['telegram', 'microblog', 'my-channel'],
+  author: 'Your Name',
+  noIndex: false,
+  noFollow: false,
+},
+```
+
+### 3.7: 统计分析
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `analytics.googleAnalyticsId` | `string` | Google Analytics 4 衡量 ID（如 `G-XXXXXXXXXX`）。留空禁用。 |
+| `analytics.umamiScriptUrl` | `string` | 自托管 Umami 统计脚本 URL。留空禁用。 |
+| `analytics.umamiWebsiteId` | `string` | Umami 网站 ID。 |
+
+```ts
+analytics: {
+  googleAnalyticsId: '',
+  umamiScriptUrl: '',
+  umamiWebsiteId: '',
+},
+```
+
+### 3.8: 构建与同步限制
+
+| 键 | 类型 | 说明 |
+|----|------|------|
+| `maxPages` | `number` | 同步时抓取的最大 Telegram 快照页数。每页约 20 条帖子。默认 `50`。 |
+| `mediaMirror.directory` | `string` | 镜像媒体文件的公共 URL 前缀（如 `/media`）。 |
+| `mediaMirror.userAgent` | `string` | 从 Telegram 下载媒体时的 User-Agent 字符串。 |
+
+```ts
+maxPages: 50,
+mediaMirror: {
+  directory: '/media',
+  userAgent: 'TelecastStaticSync/1.0',
+},
+```
+
+### 3.9: 完整示例
+
+```ts
+export const SITE_CONSTANTS: SiteConstantConfig = {
+  channel: 'your_channel',
   locale: 'en',
   timezone: 'UTC',
-  commentsEnabled: false,
-  reactionsEnabled: true,
-  staticBuild: {
-    maxPages: 50,
-    devRefreshMinutes: 45,
+  siteUrl: 'https://tg.example.com',
+  telegramHost: 't.me',
+  staticProxy: '',
+  cloudFlare: {
+    transform: false,
+    transformPrefix: '/cdn-cgi/image/format=auto,quality=85/',
   },
+  hideDescription: false,
+  reactionsEnabled: true,
+  pwa: true,
+  website: 'https://example.com',
+  twitter: 'username',
+  github: 'username',
+  telegram: 'your_channel',
+  mastodon: '',
+  bluesky: '',
+  customBanner: '',
+  customFooter: '',
+  rssBeautify: true,
+  seo: {
+    title: 'My Telecast',
+    description: '来自我的 Telegram 频道的帖子。',
+    ogImage: '/og-auto.png',
+    keywords: ['telegram', 'microblog'],
+    author: 'Your Name',
+    noIndex: false,
+    noFollow: false,
+  },
+  analytics: {
+    googleAnalyticsId: '',
+    umamiScriptUrl: '',
+    umamiWebsiteId: '',
+  },
+  maxPages: 50,
   mediaMirror: {
     directory: '/media',
     userAgent: 'TelecastStaticSync/1.0',
@@ -163,159 +230,47 @@ export const SITE_CONSTANTS = {
 }
 ```
 
-## 5: 同步命令说明
+## 4: 同步命令
 
-### 5.1: 基础命令
+### 4.1: 用法
 
 ```bash
-pnpm sync:content --build
+pnpm sync [flags]
 ```
 
-### 5.2: 可用参数
+### 4.2: 参数
 
-1. `--build`：构建模式同步。
-2. `--dev`：开发模式同步。
-3. `--force`：开发模式下强制执行，不走新鲜度跳过逻辑。
-4. `--allow-empty`：允许远端为空快照。
+| 参数 | 效果 |
+|------|------|
+| `--og-image` | 从频道元数据生成 `public/og-auto.png`。 |
+| `--favicon` | 从频道头像生成 `favicon.ico`、`favicon.svg` 和 PWA 图标 PNG。 |
 
-### 5.3: 生成产物
+两个参数都在 `package.json` 的默认 `build` 脚本中使用：
 
-1. `src/generated/static-snapshot.json`
-2. `public/search/index.json`
-3. `public/media/*`
+```json
+"build": "pnpm sync --og-image --favicon && next build --webpack"
+```
 
-### 5.4: 新鲜度与回退机制
+> [!NOTE]
+> 这两个参数完全可选。它们会从 Telegram 频道头像自动生成 Open Graph 图片和 favicon，无需手动制作任何图形素材即可部署。如果你更喜欢使用自己设计的 OG 图片或 favicon 文件，只需从 `package.json` 的 `build` 脚本中移除对应参数，并将自定义文件放入 `public/` 目录即可。
 
-1. 开发模式可在产物足够新时跳过同步。
-2. 远端拉取失败且已有历史快照时，会保留旧快照。
-3. 无历史快照且远端为空时，同步会失败，除非使用 `--allow-empty`。
+### 4.3: 生成产物
 
-## 6: 路由与公开接口
+1. `src/generated/static-snapshot.json` — 所有路由的页面数据。
+2. `public/search/index.json` — 预构建的 Lunr 全文搜索索引。
+3. `public/media/*` — 本地镜像的媒体文件。
+4. `public/og-auto.png` — Open Graph 图片（传入 `--og-image` 时生成）。
+5. `public/favicon.ico`、`public/favicon.svg`、`public/icon-*.png` — favicon（传入 `--favicon` 时生成）。
 
-### 6.1: 主要多语言路由
+## 5: 部署
 
-1. `/{locale}`
-2. `/{locale}/before/{cursor}`
-3. `/{locale}/after/{cursor}`
-4. `/{locale}/posts/{id}`
-5. `/{locale}/search`
-6. `/{locale}/tags`
-7. `/{locale}/links`
+> [!WARNING]
+> 本章节目前仍在编写中。
 
-### 6.2: 元数据与订阅路由
+## 6: 许可证
 
-1. `/robots.txt`
-2. `/rss.xml`
-3. `/rss.json`
-4. `/sitemap.xml`
-5. `/rules/prefetch.json`
+本项目采用 [AGPL-3.0](./LICENSE) 许可证。
 
-### 6.3: 语言重定向行为
-
-不带语言前缀的路径会被重定向到默认语言路径。
-
-## 7: 部署
-
-### 7.1: Vercel
-
-1. 导入仓库并按 Next.js 项目部署。
-2. 构建时会通过 `prebuild` 自动刷新快照。
-3. 每次部署都可得到最新同步产物。
-
-### 7.2: Cloudflare
-
-1. 使用支持 Next.js 输出的部署流程。
-2. 确保执行 `pnpm build` 触发同步与产物生成。
-3. 校验 `public/media` 与 `public/search/index.json` 被正确发布。
-
-### 7.3: 容器部署
-
-1. 使用项目 Dockerfile 或等价流程构建镜像。
-2. 以 Node 服务方式运行，端口 `4321`。
-3. 通过定时重部署保持内容更新。
-
-## 8: 定时更新与 cron 策略
-
-### 8.1: 为什么需要定时任务
-
-内容在构建阶段生成，运行时不会自动拉取新数据。
-
-### 8.2: Vercel 方案
-
-1. 创建 Deploy Hook。
-2. 创建受保护的 cron API 路由。
-3. 通过 Vercel Cron 定时调用该路由。
-
-### 8.3: Cloudflare 方案
-
-1. 创建 Pages Deploy Hook。
-2. 创建带 Cron Trigger 的 Worker。
-3. 由 Worker 定时调用 Deploy Hook。
-
-### 8.4: 多平台统一方案
-
-通过一个 GitHub Actions 定时工作流统一触发多个平台的 Deploy Hook。
-
-### 8.5: 安全建议
-
-1. cron 路由必须验证密钥。
-2. Deploy Hook 放入平台密钥管理。
-3. 区分记录同步失败与部署失败日志。
-
-## 9: 运行维护与排障
-
-### 9.1: 快照为空或帖子缺失
-
-1. 检查 `telegramHost` 网络可达性。
-2. 检查频道可见性与公开访问状态。
-3. 执行 `pnpm sync:content --build` 并查看日志。
-
-### 9.2: 标签数量异常偏少
-
-标签来源于抓取到的帖子标签与配置常量。
-抓取失败时会继续沿用旧快照，标签数量可能保持较少。
-
-### 9.3: robots 路由冲突
-
-同一应用中不要同时存在 `public/robots.txt` 与 `src/app/robots.ts`。
-
-### 9.4: Turbopack 异常
-
-若 Turbopack 在目标环境不稳定，可在生产构建改用 webpack 模式。
-
-### 9.5: 图片优化预期
-
-1. 帖子正文图片来自生成后的 HTML 内容。
-2. 本地镜像能降低外部依赖。
-3. 通过 `dangerouslySetInnerHTML` 注入的图片不会自动套用 `next/image`。
-
-## 10: 维护流程建议
-
-### 10.1: 推荐更新流程
-
-1. 修改常量配置。
-2. 执行内容同步。
-3. 执行 lint 与 build。
-4. 部署上线。
-
-### 10.2: 发布前检查清单
-
-1. 首页与多语言页面可正常访问。
-2. 搜索结果可正常返回。
-3. 标签页展示符合预期。
-4. RSS 与 sitemap 路由可访问。
-5. `public/media` 资源可正常加载。
-
-### 10.3: 发布与提交
-
-项目已包含 commitlint 与 changelog 流程，可用于规范化发布。
-
-## 11: 许可证
-
-### 11.1: 许可证说明
-
-本项目采用 AGPL-3.0 许可证。
-
-# 12: 页面速度分析与 SEO
+## 7: 页面速度分析
 
 ![Page Speed Metrics](https://cdn.jsdelivr.net/gh/andatoshiki/telecast@master/.github/assets/pagespeed-metrics.svg)
