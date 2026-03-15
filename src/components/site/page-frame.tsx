@@ -23,6 +23,7 @@ import { ContentCodeCopy } from './content-code-copy'
 import { ContentTwemoji } from './content-twemoji'
 import { ContentVideoPlayer } from './content-video-player'
 import { ContentZoom } from './content-zoom'
+import { ScrollToTop } from './scroll-to-top'
 import { SidebarBackButton } from './sidebar-back-button'
 import { ThemeToggle } from './theme-toggle'
 
@@ -323,6 +324,15 @@ export function PageFrame({
                 </TooltipTrigger>
                 <TooltipContent side="right">{resolvedMessages.theme.toggle}</TooltipContent>
               </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ScrollToTop
+                    ariaLabel={resolvedMessages.sidebar.backToTop}
+                    className={sidebarIconButtonClass}
+                  />
+                </TooltipTrigger>
+                <TooltipContent side="right">{resolvedMessages.sidebar.backToTop}</TooltipContent>
+              </Tooltip>
             </div>
           </TooltipProvider>
         </aside>
@@ -337,7 +347,18 @@ export function PageFrame({
                   className="h-11 w-11 rounded-full border object-cover"
                   loading="eager"
                 />
-                <p className="min-w-0 truncate text-base font-semibold">{channel.title}</p>
+                <div className="min-w-0">
+                  <p className="truncate text-base font-semibold leading-tight">{channel.title}</p>
+                  {channel.subscriberCount
+                    ? (
+                        <p className="truncate text-xs text-muted-foreground">
+                          {channel.subscriberCount}
+                          {' '}
+                          {resolvedMessages.feed.subscribers}
+                        </p>
+                      )
+                    : null}
+                </div>
               </a>
               <p className="shrink-0 text-sm font-medium text-muted-foreground">{getPageTitle(currentPath, resolvedMessages, pageNumber)}</p>
             </div>

@@ -20,6 +20,7 @@ export const jaMessages: LocaleMessages = {
   },
   sidebar: {
     language: '言語',
+    backToTop: 'トップへ戻る',
   },
   external: {
     rss: 'RSS',
@@ -39,6 +40,7 @@ export const jaMessages: LocaleMessages = {
     channelAvatarAlt: 'チャンネルのアバター',
     avatarSuffix: 'のアバター',
     emojiAlt: '絵文字',
+    subscribers: '人の登録者',
   },
   post: {
     backToFeed: 'フィードに戻る',

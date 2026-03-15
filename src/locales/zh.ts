@@ -20,6 +20,7 @@ export const zhMessages: LocaleMessages = {
   },
   sidebar: {
     language: '语言',
+    backToTop: '返回顶部',
   },
   external: {
     rss: 'RSS',
@@ -39,6 +40,7 @@ export const zhMessages: LocaleMessages = {
     channelAvatarAlt: '频道头像',
     avatarSuffix: '的头像',
     emojiAlt: '表情',
+    subscribers: '位订阅者',
   },
   post: {
     backToFeed: '返回动态',

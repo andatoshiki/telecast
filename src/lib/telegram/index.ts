@@ -681,12 +681,21 @@ export async function getChannelInfo(options: ChannelQuery = {}): Promise<Channe
 
   const descriptionNode = await modifyHtmlContent($, $('.tgme_channel_info_description'), 0, cfg.staticProxy)
 
+  let subscriberCount: string | undefined
+  $('.tgme_channel_info_counter').each((_, el) => {
+    const type = $(el).find('.counter_type').text().trim().toLowerCase()
+    if (type === 'subscribers' || type === 'members') {
+      subscriberCount = $(el).find('.counter_value').text().trim() || undefined
+    }
+  })
+
   const channelInfo: ChannelInfo = {
     posts,
     title: $('.tgme_channel_info_header_title')?.text() || cfg.channel,
     description: $('.tgme_channel_info_description')?.text() || '',
     descriptionHTML: sanitizeDescriptionHtml(descriptionNode?.html() || ''),
     avatar: $('.tgme_page_photo_image img')?.attr('src') || '',
+    subscriberCount,
   }
 
   cache.set(cacheKey, channelInfo)

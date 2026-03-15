@@ -25,6 +25,7 @@ export interface ChannelInfo {
   description: string
   descriptionHTML: string
   avatar?: string
+  subscriberCount?: string
 }
 
 export interface NavLink {

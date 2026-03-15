@@ -18,6 +18,7 @@ export interface LocaleMessages {
   }
   sidebar: {
     language: string
+    backToTop: string
   }
   external: {
     rss: string
@@ -37,6 +38,7 @@ export interface LocaleMessages {
     channelAvatarAlt: string
     avatarSuffix: string
     emojiAlt: string
+    subscribers: string
   }
   post: {
     backToFeed: string
@@ -109,6 +111,7 @@ export const enMessages: LocaleMessages = {
   },
   sidebar: {
     language: 'Languages',
+    backToTop: 'Back to top',
   },
   external: {
     rss: 'RSS',
@@ -128,6 +131,7 @@ export const enMessages: LocaleMessages = {
     channelAvatarAlt: 'Channel avatar',
     avatarSuffix: ' avatar',
     emojiAlt: 'emoji',
+    subscribers: 'subscribers',
   },
   post: {
     backToFeed: 'Back to Feed',
