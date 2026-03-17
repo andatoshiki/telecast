@@ -92,7 +92,7 @@
     "autoprefixer": "^10.4.23",
     "changelogen": "^0.6.1",
     "eslint": "^9.39.1",
-    "eslint-plugin-format": "^1.1.0",
+    "eslint-plugin-format": "^2.0.1",
     "postcss": "^8.5.6",
     "sharp": "^0.34.5",
     "simple-git-hooks": "^2.13.0",
