@@ -81,7 +81,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.3",
-    "@commitlint/cli": "^19.8.1",
+    "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/lunr": "^2.3.7",
     "@types/node": "^24.10.1",
