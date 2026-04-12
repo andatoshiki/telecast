@@ -1,0 +1,66 @@
+1:"$Sreact.fragment"
+2:I[9030,["177","static/chunks/app/layout-9f3f8582b246b875.js"],""]
+4:I[8884,["177","static/chunks/app/layout-9f3f8582b246b875.js"],"ServiceWorkerRegister"]
+5:I[3013,["177","static/chunks/app/layout-9f3f8582b246b875.js"],"ThemeProvider"]
+6:I[8130,[],""]
+7:I[5296,[],""]
+d:I[3882,[],""]
+:HL["/_next/static/css/b4327746bdfa74b2.css","style"]
+3:T44c,(() => {
+  const localHosts = ['localhost', '127.0.0.1', '[::1]']
+  if (!localHosts.includes(window.location.hostname)) {
+    return
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    return
+  }
+
+  const reloadKey = 'telecast:dev-sw-reset'
+  const clearCaches = async () => {
+    if (!('caches' in window)) {
+      return
+    }
+
+    const keys = await caches.keys()
+    await Promise.all(
+      keys
+        .filter(key => key.startsWith('telecast-'))
+        .map(key => caches.delete(key)),
+    )
+  }
+
+  navigator.serviceWorker.getRegistrations()
+    .then(async (registrations) => {
+      if (registrations.length === 0) {
+        sessionStorage.removeItem(reloadKey)
+        await clearCaches()
+        return
+      }
+
+      await Promise.all(registrations.map(registration => registration.unregister()))
+      await clearCaches()
+
+      if (navigator.serviceWorker.controller && !sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, '1')
+        window.location.reload()
+        return
+      }
+
+      sessionStorage.removeItem(reloadKey)
+    })
+    .catch(() => {})
+})()0:{"P":null,"b":"vXp1PfmAAEbinioifjoWd","c":["","after","23",""],"q":"","i":false,"f":[[["",{"children":["after",{"children":[["cursor","23","d"],{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/b4327746bdfa74b2.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","$L2",null,{"id":"dev-service-worker-cleanup","strategy":"beforeInteractive","children":"$3"}],["$","link",null,{"rel":"apple-touch-icon","href":"/icon-192x192.png"}]]}],["$","body",null,{"children":[["$","$L4",null,{"enabled":true}],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"Blog\",\"name\":\"Telecast – Anda Toshiki\",\"description\":\"Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!\",\"url\":\"https://tg.toshiki.dev\",\"author\":{\"@type\":\"Person\",\"name\":\"Anda Toshiki\"},\"image\":\"https://tg.toshiki.dev/og-auto.png\"}"}}],["$","$L5",null,{"attribute":"class","defaultTheme":"system","enableSystem":true,"disableTransitionOnChange":true,"children":["$","$L6",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L7",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"mx-auto flex min-h-screen w-full max-w-[812px] items-center justify-center px-4 py-12","children":["$","section",null,{"className":"surface w-full max-w-xl p-8 text-center","children":[["$","p",null,{"className":"text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground","children":"Error 404"}],["$","h1",null,{"className":"mt-3 text-3xl font-semibold leading-tight text-foreground","children":"Page not found"}],["$","p",null,{"className":"mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground","children":"This page does not exist, has moved, or the URL is incorrect."}],["$","div",null,{"className":"mt-6 flex flex-wrap items-center justify-center gap-3","children":[["$","a",null,{"href":"/","children":"Go Home","className":"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 h-10 py-2 rounded-full px-5","ref":null}],["$","a",null,{"href":"/search","children":"Open Search","className":"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 py-2 rounded-full px-5","ref":null}]]}]]}]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],"","$L8"]}]]}]]}],{"children":["$L9",{"children":["$La",{"children":["$Lb",{},null,false,false]},null,false,false]},null,false,false]},null,false,false],"$Lc",false]],"m":"$undefined","G":["$d",[]],"S":true}
+f:I[9835,[],"OutletBoundary"]
+10:"$Sreact.suspense"
+12:I[9835,[],"ViewportBoundary"]
+14:I[9835,[],"MetadataBoundary"]
+8:["$","$L2",null,{"defer":true,"src":"https://umami.toshiki.dev/script.js","data-website-id":"2aeae228-582d-45ae-8d43-5f6dbf673339","strategy":"afterInteractive"}]
+9:["$","$1","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L7",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]
+a:["$","$1","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L7",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]
+b:["$","$1","c",{"children":["$Le",null,["$","$Lf",null,{"children":["$","$10",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]]}]
+c:["$","$1","h",{"children":[null,["$","$L12",null,{"children":"$L13"}],["$","div",null,{"hidden":true,"children":["$","$L14",null,{"children":["$","$10",null,{"name":"Next.Metadata","children":"$L15"}]}]}],null]}]
+e:E{"digest":"NEXT_REDIRECT;replace;/before/72;307;"}
+13:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","media":"(prefers-color-scheme: light)","content":"#ffffff"}],["$","meta","3",{"name":"theme-color","media":"(prefers-color-scheme: dark)","content":"#0a0a1a"}]]
+11:null
+15:[["$","title","0",{"children":"Telecast – Anda Toshiki"}],["$","meta","1",{"name":"description","content":"Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!"}],["$","meta","2",{"name":"author","content":"Anda Toshiki"}],["$","link","3",{"rel":"manifest","href":"/manifest.webmanifest","crossOrigin":"$undefined"}],["$","meta","4",{"name":"keywords","content":"telecast,toshikidev,anda toshiki,telegram channel,microblog,developer blog,tech updates,programming,open source,web development"}],["$","meta","5",{"name":"creator","content":"Anda Toshiki"}],["$","meta","6",{"name":"robots","content":"index, follow"}],["$","link","7",{"rel":"canonical","href":"https://tg.toshiki.dev/"}],["$","link","8",{"rel":"alternate","type":"application/rss+xml","href":"https://tg.toshiki.dev/rss.xml"}],["$","meta","9",{"name":"format-detection","content":"telephone=no"}],["$","meta","10",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","11",{"name":"apple-mobile-web-app-title","content":"Telecast – Anda Toshiki"}],["$","meta","12",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","meta","13",{"property":"og:title","content":"Telecast – Anda Toshiki"}],["$","meta","14",{"property":"og:description","content":"Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!"}],["$","meta","15",{"property":"og:url","content":"https://tg.toshiki.dev/"}],["$","meta","16",{"property":"og:site_name","content":"Telecast – Anda Toshiki"}],["$","meta","17",{"property":"og:image","content":"https://tg.toshiki.dev/og-auto.png"}],["$","meta","18",{"property":"og:image:width","content":"1200"}],["$","meta","19",{"property":"og:image:height","content":"630"}],["$","meta","20",{"property":"og:image:alt","content":"Telecast – Anda Toshiki"}],["$","meta","21",{"property":"og:type","content":"website"}],["$","meta","22",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","23",{"name":"twitter:creator","content":"@andatoshiki"}],["$","meta","24",{"name":"twitter:title","content":"Telecast – Anda Toshiki"}],["$","meta","25",{"name":"twitter:description","content":"Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!"}],["$","meta","26",{"name":"twitter:image","content":"https://tg.toshiki.dev/og-auto.png"}]]

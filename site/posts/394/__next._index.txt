@@ -1,0 +1,53 @@
+1:"$Sreact.fragment"
+2:I[9030,["177","static/chunks/app/layout-9f3f8582b246b875.js"],""]
+4:I[8884,["177","static/chunks/app/layout-9f3f8582b246b875.js"],"ServiceWorkerRegister"]
+5:I[3013,["177","static/chunks/app/layout-9f3f8582b246b875.js"],"ThemeProvider"]
+6:I[8130,[],""]
+7:I[5296,[],""]
+:HL["/_next/static/css/b4327746bdfa74b2.css","style"]
+3:T44c,(() => {
+  const localHosts = ['localhost', '127.0.0.1', '[::1]']
+  if (!localHosts.includes(window.location.hostname)) {
+    return
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    return
+  }
+
+  const reloadKey = 'telecast:dev-sw-reset'
+  const clearCaches = async () => {
+    if (!('caches' in window)) {
+      return
+    }
+
+    const keys = await caches.keys()
+    await Promise.all(
+      keys
+        .filter(key => key.startsWith('telecast-'))
+        .map(key => caches.delete(key)),
+    )
+  }
+
+  navigator.serviceWorker.getRegistrations()
+    .then(async (registrations) => {
+      if (registrations.length === 0) {
+        sessionStorage.removeItem(reloadKey)
+        await clearCaches()
+        return
+      }
+
+      await Promise.all(registrations.map(registration => registration.unregister()))
+      await clearCaches()
+
+      if (navigator.serviceWorker.controller && !sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, '1')
+        window.location.reload()
+        return
+      }
+
+      sessionStorage.removeItem(reloadKey)
+    })
+    .catch(() => {})
+})()0:{"buildId":"vXp1PfmAAEbinioifjoWd","rsc":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/b4327746bdfa74b2.css","precedence":"next"}]],["$","html",null,{"lang":"en","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","$L2",null,{"id":"dev-service-worker-cleanup","strategy":"beforeInteractive","children":"$3"}],["$","link",null,{"rel":"apple-touch-icon","href":"/icon-192x192.png"}]]}],["$","body",null,{"children":[["$","$L4",null,{"enabled":true}],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"Blog\",\"name\":\"Telecast – Anda Toshiki\",\"description\":\"Tech notes, development logs, and microblog posts by Anda Toshiki via Telegram!\",\"url\":\"https://tg.toshiki.dev\",\"author\":{\"@type\":\"Person\",\"name\":\"Anda Toshiki\"},\"image\":\"https://tg.toshiki.dev/og-auto.png\"}"}}],["$","$L5",null,{"attribute":"class","defaultTheme":"system","enableSystem":true,"disableTransitionOnChange":true,"children":["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}],"notFound":[["$","main",null,{"className":"mx-auto flex min-h-screen w-full max-w-[812px] items-center justify-center px-4 py-12","children":["$","section",null,{"className":"surface w-full max-w-xl p-8 text-center","children":[["$","p",null,{"className":"text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground","children":"Error 404"}],["$","h1",null,{"className":"mt-3 text-3xl font-semibold leading-tight text-foreground","children":"Page not found"}],["$","p",null,{"className":"mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground","children":"This page does not exist, has moved, or the URL is incorrect."}],["$","div",null,{"className":"mt-6 flex flex-wrap items-center justify-center gap-3","children":[["$","a",null,{"href":"/","children":"Go Home","className":"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 h-10 py-2 rounded-full px-5","ref":null}],["$","a",null,{"href":"/search","children":"Open Search","className":"inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 py-2 rounded-full px-5","ref":null}]]}]]}]}],[]]}]}],"","$L8"]}]]}]]}],"loading":null,"isPartial":false}
+8:["$","$L2",null,{"defer":true,"src":"https://umami.toshiki.dev/script.js","data-website-id":"2aeae228-582d-45ae-8d43-5f6dbf673339","strategy":"afterInteractive"}]
