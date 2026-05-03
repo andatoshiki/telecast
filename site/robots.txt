@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+Host: https://tg.toshiki.dev
+Sitemap: https://tg.toshiki.dev/sitemap.xml
