@@ -60,7 +60,7 @@ export const SITE_CONSTANTS: SiteConstantConfig = {
   // Canonical base URL of the published site.
   siteUrl: 'https://tg.toshiki.dev',
   // Telegram host used for channel fetches and public links (e.g. t.me).
-  telegramHost: 't.me',
+  telegramHost: 'telegram.me',
   // Proxy base URL for Telegram-origin media. Leave empty unless you need a runtime proxy.
   staticProxy: '',
   cloudFlare: {
