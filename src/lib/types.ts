@@ -6,6 +6,11 @@ export interface ChannelReaction {
   isPaid?: boolean
 }
 
+export interface UnavailableMedia {
+  duration: string
+  url: string
+}
+
 export interface ChannelPost {
   id: string
   title: string
@@ -16,6 +21,7 @@ export interface ChannelPost {
   tags: string[]
   text: string
   content: string
+  unavailableMedia?: UnavailableMedia
   reactions: ChannelReaction[]
 }
 

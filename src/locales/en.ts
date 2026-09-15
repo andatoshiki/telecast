@@ -39,6 +39,9 @@ export interface LocaleMessages {
     avatarSuffix: string
     emojiAlt: string
     subscribers: string
+    unavailableMedia: string
+    unavailableMediaWithDuration: string
+    viewOriginalOnTelegram: string
   }
   post: {
     backToFeed: string
@@ -132,6 +135,9 @@ export const enMessages: LocaleMessages = {
     avatarSuffix: ' avatar',
     emojiAlt: 'emoji',
     subscribers: 'subscribers',
+    unavailableMedia: 'This post contains a video that is too large to preview here.',
+    unavailableMediaWithDuration: 'This post contains a {duration} video that is too large to preview here.',
+    viewOriginalOnTelegram: 'View the original post on Telegram',
   },
   post: {
     backToFeed: 'Back to Feed',

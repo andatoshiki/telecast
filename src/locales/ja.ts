@@ -41,6 +41,9 @@ export const jaMessages: LocaleMessages = {
     avatarSuffix: 'のアバター',
     emojiAlt: '絵文字',
     subscribers: '人の登録者',
+    unavailableMedia: 'この投稿には、ここではプレビューできない大きな動画が含まれています。',
+    unavailableMediaWithDuration: 'この投稿には、ここではプレビューできない{duration}の大きな動画が含まれています。',
+    viewOriginalOnTelegram: 'Telegram で元の投稿を見る',
   },
   post: {
     backToFeed: 'フィードに戻る',

@@ -1,4 +1,4 @@
-import type { ChannelInfo, ChannelPost, ChannelReaction } from '@/lib/types'
+import type { ChannelInfo, ChannelPost, ChannelReaction, UnavailableMedia } from '@/lib/types'
 import * as cheerio from 'cheerio'
 import flourite from 'flourite'
 import { LRUCache } from 'lru-cache'
@@ -270,6 +270,36 @@ function getVideo($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: str
   return `${$.html(video)}${$.html(roundVideo)}`
 }
 
+function getUnavailableMedia(messageNode: cheerio.Cheerio<any>, channel: string, postId: string): UnavailableMedia | undefined {
+  const player = messageNode.find('.tgme_widget_message_video_player.not_supported').first()
+  if (!player.length) {
+    return undefined
+  }
+
+  const duration = player
+    .find('.message_video_duration')
+    .first()
+    .text()
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  const fallbackUrl = `https://t.me/${encodeURIComponent(channel.replace(/^@/, ''))}/${encodeURIComponent(postId)}`
+  const rawUrl = (player.attr('href') || fallbackUrl).trim()
+  let url = fallbackUrl
+
+  try {
+    const parsedUrl = new URL(rawUrl, 'https://t.me')
+    if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+      url = parsedUrl.toString()
+    }
+  }
+  catch {
+    // Fall back to the canonical Telegram post URL.
+  }
+
+  return { duration, url }
+}
+
 function getLinkPreview($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: string, _index: number) {
   const link = $(item).find('.tgme_widget_message_link_preview')
   const title = $(item).find('.link_preview_title')?.text() || $(item).find('.link_preview_site_name')?.text() || ''
@@ -511,6 +541,7 @@ async function getPost(
   const text = contentNode?.text() || ''
   const title = text.match(/^.*?(?=[。\n]|http\S)/g)?.[0] ?? text
   const id = messageNode.attr('data-post')?.replace(new RegExp(`${channel}/`, 'i'), '') || ''
+  const unavailableMedia = getUnavailableMedia(messageNode, channel, id)
 
   const tags = contentNode
     .find('a[href^="?q="]')
@@ -522,8 +553,6 @@ async function getPost(
     ?.get()
     ?.filter(Boolean) as string[]
 
-  const hasDirectVideo = messageNode.find('.tgme_widget_message_video_wrap video, .tgme_widget_message_roundvideo_wrap video').length > 0
-
   const rawContent = [
     getReply($, messageNode[0], channel),
     await getImages($, messageNode[0], staticProxy, index, title),
@@ -533,7 +562,6 @@ async function getPost(
     getVideoStickers($, messageNode[0], staticProxy, index),
     messageNode.find('.tgme_widget_message_poll')?.html(),
     $.html(messageNode.find('.tgme_widget_message_document_wrap')),
-    hasDirectVideo ? '' : $.html(messageNode.find('.tgme_widget_message_video_player.not_supported')),
     $.html(messageNode.find('.tgme_widget_message_location_wrap')),
     getLinkPreview($, messageNode[0], staticProxy, index),
   ]
@@ -555,6 +583,7 @@ async function getPost(
     tags,
     text,
     content: sanitizePostHtml(rawContent),
+    ...(unavailableMedia ? { unavailableMedia } : {}),
     reactions: reactionsEnabled ? getReactions($, messageNode[0], staticProxy) : [],
   }
 }

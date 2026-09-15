@@ -3,7 +3,7 @@
 import type { AppLocale } from '@/lib/i18n'
 import type { ChannelPost } from '@/lib/types'
 import type { LocaleMessages } from '@/locales/en'
-import { Eye, Tag } from 'lucide-react'
+import { Eye, Tag, VideoOff } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Badge } from '@/components/ui/badge'
 import { localizePath } from '@/lib/i18n'
@@ -43,6 +43,10 @@ export function PostCard({
   const avatarAlt = displayName
     ? `${displayName}${messages.feed.avatarSuffix}`
     : messages.feed.channelAvatarAlt
+  const unavailableMediaDuration = post.unavailableMedia?.duration.trim() || ''
+  const unavailableMediaMessage = unavailableMediaDuration
+    ? messages.feed.unavailableMediaWithDuration.replace('{duration}', unavailableMediaDuration)
+    : messages.feed.unavailableMedia
 
   return (
     <motion.article
@@ -90,6 +94,27 @@ export function PostCard({
             </a>
 
           </div>
+
+          {post.unavailableMedia
+            ? (
+                <div className="mb-3 flex items-start gap-2 rounded-lg border bg-muted/60 px-3 py-2 text-[13px] leading-5 text-muted-foreground" role="note">
+                  <VideoOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+                  <p>
+                    {unavailableMediaMessage}
+                    {' '}
+                    <a
+                      href={post.unavailableMedia.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link-smooth font-medium text-foreground"
+                    >
+                      {messages.feed.viewOriginalOnTelegram}
+                    </a>
+                    .
+                  </p>
+                </div>
+              )
+            : null}
 
           {post.content
             ? <div className="prose-telegram" dangerouslySetInnerHTML={{ __html: post.content }} />

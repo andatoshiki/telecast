@@ -41,6 +41,9 @@ export const zhMessages: LocaleMessages = {
     avatarSuffix: '的头像',
     emojiAlt: '表情',
     subscribers: '位订阅者',
+    unavailableMedia: '此帖子包含无法在此处预览的大型视频。',
+    unavailableMediaWithDuration: '此帖子包含一段时长为{duration}、无法在此处预览的大型视频。',
+    viewOriginalOnTelegram: '在 Telegram 上查看原帖',
   },
   post: {
     backToFeed: '返回动态',
