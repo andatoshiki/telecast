@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Toshiki&apos;s Devpedia</title>
+    <description>Design, Build &amp; Ship; Privacy, Security &amp; Automation.</description>
+    <link>https://tg.toshiki.dev/</link>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/548</guid>
+        <link>https://tg.toshiki.dev/posts/548</link>
+        <title>I fucking hate assembly.</title>
+        <pubDate>Fri, 18 Sep 2026 05:02:19 GMT</pubDate>
+        <description><![CDATA[I fucking hate assembly.]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/546</guid>
+        <link>https://tg.toshiki.dev/posts/546</link>
+        <title>Had a surprisingly lucky academic encounter today.I’m taking MAT 343 (Applied Linear Algebra) this semester because it’s required for my CS degree. It’s essentially linear algebra with more of an applied/computational focus, particularly toward things like machine learning, and it has a lab component where we use Python/MATLAB to actually implement and work with the concepts.The problem is that my 343 professor is basically speed-running lectures and textbook with some sort of expectation of us knowing concepts beforehand. A lot of the time it feels like definitions and concepts are thrown onto the screen one after another without much time to actually digest what each component means. I can keep up, but the teaching style just doesn’t work particularly well for me.Meanwhile, I’ve been taking calculus with another professor for a long time, and I’m currently taking my final calculus course, Calc III, with him. I missed a quiz last Friday, so today I asked if I could make it up. He told me he had another class immediately afterward, MAT 342, and I could take the quiz there.I went in intending to take my quiz and leave.While doing the quiz, though, I started listening to his lecture in the background and suddenly realized:Wait… this is basically the exact same linear algebra I’m learning in MAT 343.MAT 342 and 343 have different focuses. 343 is the more computational/applied version with programming and labs, while 342 is aimed more toward math majors and doesn’t require the same programming component. But the underlying linear algebra concepts—and apparently even much of the homework—overlap heavily.The funniest part is that his teaching style is the complete opposite of my 343 professor’s. He’s very old-school: he pulls out handwritten notes, starts from the fundamentals, explains what every component actually means, and moves slowly enough to make sure students understand before continuing.Because he teaches more slowly, his class happens to be about one section behind my 343 class.Which is basically perfect.Whatever gets speedrun in 343, I encounter again a little later in 342, except this time it gets explained slowly from scratch. And since the 343 homework often isn’t due until a week or two after we initially learn the material, 342 basically lands at the perfect time to refresh everything before I actually need to do the homework.So instead of leaving after my quiz, I stayed for the entire lecture. Afterward, I asked him if I could just keep showing up to his MAT 342 class whenever I’m free and use it as a reinforcement/tutorial for MAT 343.He said yes.It fits perfectly into my schedule. The material overlaps. Even the homework is basically the same. And it costs me absolutely nothing.So somehow, missing one Calc III quiz accidentally gave me a free supplementary linear algebra class taught by a professor I already know, whose teaching style happens to work extremely well for me.Apparently I missed a quiz and accidentally unlocked the MAT 343 support DLC for free. 😭 #life</title>
+        <pubDate>Mon, 14 Sep 2026 23:59:32 GMT</pubDate>
+        <description><![CDATA[Had a surprisingly lucky academic encounter today.<br><br>I’m taking <b>MAT 343 (Applied Linear Algebra)</b> this semester because it’s required for my CS degree. It’s essentially linear algebra with more of an applied/computational focus, particularly toward things like machine learning, and it has a lab component where we use <b>Python/MATLAB</b> to actually implement and work with the concepts.<br><br>The problem is that my 343 professor is basically speed-running lectures and textbook with some sort of expectation of us knowing concepts beforehand. A lot of the time it feels like definitions and concepts are thrown onto the screen one after another without much time to actually digest what each component means. I can keep up, but the teaching style just doesn’t work particularly well for me.<br><br>Meanwhile, I’ve been taking calculus with another professor for a long time, and I’m currently taking my final calculus course, Calc III, with him. I missed a quiz last Friday, so today I asked if I could make it up. He told me he had another class immediately afterward, <b>MAT 342, </b>and I could take the quiz there.<br><br>I went in intending to take my quiz and leave.<br><br>While doing the quiz, though, I started listening to his lecture in the background and suddenly realized:<br><br><b>Wait… this is basically the exact same linear algebra I’m learning in MAT 343.</b><br><br>MAT 342 and 343 have different focuses. <b>343 is the more computational/applied version with programming and labs, while 342 is aimed more toward math majors and doesn’t require the same programming component.</b> But the underlying linear algebra concepts—and apparently even much of the homework—overlap heavily.<br><br>The funniest part is that his teaching style is the complete opposite of my 343 professor’s. He’s very old-school: he pulls out handwritten notes, starts from the fundamentals, explains what every component actually means, and moves slowly enough to make sure students understand before continuing.<br><br>Because he teaches more slowly, his class happens to be about <b>one section behind my 343 class</b>.<br><br>Which is basically perfect.<br><br>Whatever gets speedrun in 343, I encounter again a little later in 342, except this time it gets explained slowly from scratch. And since the 343 homework often isn’t due until a week or two after we initially learn the material, 342 basically lands at the perfect time to refresh everything before I actually need to do the homework.<br><br>So instead of leaving after my quiz, I stayed for the entire lecture. Afterward, I asked him if I could just keep showing up to his MAT 342 class whenever I’m free and use it as a reinforcement/tutorial for MAT 343.<br><br>He said yes.<br><br>It fits perfectly into my schedule. The material overlaps. <b>Even the homework is basically the same. And it costs me absolutely nothing.</b><br><br>So somehow, missing one Calc III quiz accidentally gave me a free supplementary linear algebra class taught by a professor I already know, whose teaching style happens to work extremely well for me.<br><br>Apparently I missed a quiz and accidentally unlocked the <b>MAT 343 support DLC for free.</b> <i class="emoji"><b>😭</b></i> <a href="/search?q=%23life" title="#life">#life</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/543</guid>
+        <link>https://tg.toshiki.dev/posts/543</link>
+        <title>Rebuilt an adaptive TOC minimap for my blog: each heading collapses into a proportional pill that preserves hierarchy and tracks the active section. Hover to expand fully, clickable outline, with smooth motion and viewport-aware scrolling. Silk smoo00OOth like fucking butter! 🧈 #dev</title>
+        <pubDate>Sun, 13 Sep 2026 18:09:17 GMT</pubDate>
+        <description><![CDATA[Rebuilt an adaptive TOC minimap for my blog: each heading collapses into a proportional pill that preserves hierarchy and tracks the active section. Hover to expand fully, clickable outline, with smooth motion and viewport-aware scrolling. Silk smoo00OOth like fucking butter! <i class="emoji"><b>🧈</b></i> <a href="/search?q=%23dev" title="#dev">#dev</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/542</guid>
+        <link>https://tg.toshiki.dev/posts/542</link>
+        <title>The entirety of my Obsidian vault level graph looks like a bad petri dish with mold overgrowth. #dev</title>
+        <pubDate>Tue, 08 Sep 2026 05:34:52 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/74ce64caeca75a9e8994336299da0bdb.jpg" alt="The entirety of my Obsidian vault level graph looks like a bad petri dish with mold overgrowth. #dev" loading="lazy"></div>The entirety of my Obsidian vault level graph looks like a bad petri dish with mold overgrowth. <a href="/search?q=%23dev" title="#dev">#dev</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/541</guid>
+        <link>https://tg.toshiki.dev/posts/541</link>
+        <title>Not that messy after completely reorganizing my desk setup, but it still looks a little cluttered. The display riser is easily one of the best and most cost-effective purchases I’ve made in 2026 for my setup. It helps hide my speakers, dock, and extra keyboard, frees up a surprising amount of desk space, and saves my neck from constantly looking down at the screen. Definitely one of those small upgrades that makes a much bigger difference than you’d expect, practicality at cost of 20-30 bucks from Amazon. #life</title>
+        <pubDate>Sun, 06 Sep 2026 12:00:59 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/e5c8a3ff9341270037d9440cbeeafc83.jpg" alt="Not that messy after completely reorganizing my desk setup, but it still looks a little cluttered. The display riser is easily one of the best and most cost-effective purchases I’ve made in 2026 for my setup. It helps hide my speakers, dock, and extra keyboard, frees up a surprising amount of desk space, and saves my neck from constantly looking down at the screen. Definitely one of those small upgrades that makes a much bigger difference than you’d expect, practicality at cost of 20-30 bucks from Amazon. #life" loading="lazy"></div>Not that messy after completely reorganizing my desk setup, but it still looks a little cluttered. The display riser is easily one of the best and most cost-effective purchases I’ve made in 2026 for my setup. It helps hide my speakers, dock, and extra keyboard, frees up a surprising amount of desk space, and saves my neck from constantly looking down at the screen. Definitely one of those small upgrades that makes a much bigger difference than you’d expect, practicality at cost of 20-30 bucks from Amazon. <a href="/search?q=%23life" title="#life">#life</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/540</guid>
+        <link>https://tg.toshiki.dev/posts/540</link>
+        <title>Adopted a pixel from NASA! #life</title>
+        <pubDate>Tue, 01 Sep 2026 07:50:04 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/e756d30a03ab2b644fc612e6ae273f88.jpg" alt="Adopted a pixel from NASA! #life" loading="lazy"></div>Adopted a pixel from NASA! <a href="/search?q=%23life" title="#life">#life</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/539</guid>
+        <link>https://tg.toshiki.dev/posts/539</link>
+        <title>So damn humid and hot in Shanghai, wtf😭. #life</title>
+        <pubDate>Tue, 14 Jul 2026 05:26:53 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/5fc56e3f0dc2a8f17a7a074f95da5a5f.jpg" alt="So damn humid and hot in Shanghai, wtf😭. #life" loading="lazy"></div>So damn humid and hot in Shanghai, wtf<i class="emoji"><b>😭</b></i>. <a href="/search?q=%23life" title="#life">#life</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/532</guid>
+        <link>https://tg.toshiki.dev/posts/532</link>
+        <title>📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama.</title>
+        <pubDate>Tue, 14 Jul 2026 04:48:30 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/7faeaca4fd7b58fce205a362e7e8b692.jpg" alt="📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama." loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/566aa2991fa84c9232d7ef2f22b8184f.jpg" alt="📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama." loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/df3d44a2c86ca48a762d954a8b1ba022.jpg" alt="📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama." loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/1e33397e51f8a5b9d848e8c2612bbef1.jpg" alt="📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama." loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/d471a283e3d02788995fa26362338233.jpg" alt="📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama." loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/264eb00f7213f6c242afff209d6fdd42.jpg" alt="📍Yaezuhama Beach, Toyama.📍Yaezuhama Beach, Toyama." loading="lazy"></div><div class="tgme_widget_message_text js-message_text"><i class="emoji"><b>📍</b></i>Yaezuhama Beach, Toyama.</div>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/531</guid>
+        <link>https://tg.toshiki.dev/posts/531</link>
+        <title>Finally yet successfully configured SSH access from my phone to my remote home server in the US via Tailscale, without exposing a public IPv4 address from my ISP! #dev</title>
+        <pubDate>Sun, 12 Jul 2026 01:03:06 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/7e917fafe6a4a969f513c674c9757c51.jpg" alt="Finally yet successfully configured SSH access from my phone to my remote home server in the US via Tailscale, without exposing a public IPv4 address from my ISP! #dev" loading="lazy"></div>Finally yet successfully configured SSH access from my phone to my remote home server in the US via Tailscale, without exposing a public IPv4 address from my ISP! <a href="/search?q=%23dev" title="#dev">#dev</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/530</guid>
+        <link>https://tg.toshiki.dev/posts/530</link>
+        <title>You&apos;ve gotta be kidding me, $600+ for Actions alone, I don&apos;t even dare the adaucity to look at othe product usages at all. #dev</title>
+        <pubDate>Sat, 11 Jul 2026 01:44:26 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/4e00cc1188759a4daedea7875e5faee4.jpg" alt="You've gotta be kidding me, $600+ for Actions alone, I don't even dare the adaucity to look at othe product usages at all. #dev" loading="lazy"></div>You've gotta be kidding me, $600+ for Actions alone, I don't even dare the adaucity to look at othe product usages at all. <a href="/search?q=%23dev" title="#dev">#dev</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/529</guid>
+        <link>https://tg.toshiki.dev/posts/529</link>
+        <title>📍Toyama, Long time no see. #life</title>
+        <pubDate>Tue, 16 Jun 2026 20:41:08 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/c21aa63c5ec524e6de2d9fca75069c4f.jpg" alt="📍Toyama, Long time no see. #life" loading="lazy"></div><i class="emoji"><b>📍</b></i>Toyama, Long time no see. <a href="/search?q=%23life" title="#life">#life</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/528</guid>
+        <link>https://tg.toshiki.dev/posts/528</link>
+        <title>Post 528</title>
+        <pubDate>Tue, 31 Mar 2026 02:07:40 GMT</pubDate>
+        <description><![CDATA[<a href="https://www.reddit.com/r/jellyfin/comments/1s7fmjc/learned_my_lesson_to_backup_jellyfin_config_dir/" target="_blank" rel="noopener noreferrer" title="https://www.reddit.com/r/jellyfin/comments/1s7fmjc/learned_my_lesson_to_backup_jellyfin_config_dir/">https://www.reddit.com/r/jellyfin/comments/1s7fmjc/learned_my_lesson_to_backup_jellyfin_config_dir/</a><br><br>Always keep multiple snapshots of your significant/valuable data abiding the 3-2-1 backup rule preferably with multiple snapshot across a day if constantly updating, take my instance as a cautionary tale; hereby a way to always being able to rollback your data to a prior version when something goes wrong. <a href="/search?q=%23dev" title="#dev">#dev</a><a class="tgme_widget_message_link_preview" href="https://reddit.com/r/jellyfin/comments/1s7fmjc/learned_my_lesson_to_backup_jellyfin_config_dir" target="_blank" rel="noopener noreferrer" title="Explore this post and more from the jellyfin community">
+  
+  <div class="link_preview_site_name accent_color">Reddit</div>
+  <img class="link_preview_image" alt="From the jellyfin community on Reddit" src="/cdn-cgi/image/format=auto,quality=85/media/8317b708e7eac08285ed551ca9c71311.jpg" loading="lazy">
+  <div class="link_preview_title">From the jellyfin community on Reddit</div>
+  <div class="link_preview_description">Explore this post and more from the jellyfin community</div>
+</a>]]></description>
+      </item>
+      <item>
+        <guid>https://tg.toshiki.dev/posts/525</guid>
+        <link>https://tg.toshiki.dev/posts/525</link>
+        <title>Finally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #lifeFinally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #life</title>
+        <pubDate>Mon, 30 Mar 2026 01:24:35 GMT</pubDate>
+        <description><![CDATA[<div class="image-list-container">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/2a8a5bdc39dc7d712f4de66db68b7086.jpg" alt="Finally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #lifeFinally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #life" loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/8b0557023ba06c4306d45acbb8186ca7.jpg" alt="Finally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #lifeFinally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #life" loading="lazy">
+      <img class="zoomable" src="/cdn-cgi/image/format=auto,quality=85/media/ecbe543a81afa9950e6e4c6f5e41685e.jpg" alt="Finally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #lifeFinally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. #life" loading="lazy"></div><div class="tgme_widget_message_text js-message_text">Finally finished organizing the entire Monogatari series in Jellyfin. Every season and episode manually updated (upgraded to a whole set of beautifu season posters). All metadata is now accurate for episodes including titles, descriptions, ratings, and it honestly satisfies my digital OCD so much.<br><br>Now the only question remains, when am I actually going to watch it? I guess it is mainly for fullfilling my weird digital hoarding/collectomania kink. <a href="/search?q=%23life" title="#life">#life</a></div>]]></description>
+      </item>
+  </channel>
+</rss>
