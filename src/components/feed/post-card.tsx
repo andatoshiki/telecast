@@ -210,62 +210,65 @@ export function PostCard({
               )
             : null}
 
-          {post.tags.length > 0
-            ? (
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Tag className="h-4 w-4 text-muted-foreground" />
-                  {post.tags.map(tag => (
-                    <a key={`${post.id}-${tag}`} href={localizePath(uiLocale, `/search?q=${encodeURIComponent(`#${tag}`)}`)}>
-                      <Badge variant="outline" className="cursor-pointer rounded-full px-3 hover:bg-secondary">
-                        {tag}
-                      </Badge>
-                    </a>
-                  ))}
-                </div>
-              )
-            : null}
-
-          {post.reactions.length > 0 || post.views || post.edited
-            ? (
-                <div className="mt-3 flex flex-wrap items-center justify-end gap-2" aria-label={messages.feed.reactionsAndViewsAria}>
-                  {post.reactions.map(reaction => (
-                    <span
-                      key={`${post.id}-${reaction.emojiId || reaction.emoji}-${reaction.count}`}
-                      className={`inline-flex items-center gap-1 rounded-full border px-3 py-0.5 text-xs font-semibold ${reaction.isPaid
-                        ? 'bg-secondary text-secondary-foreground'
-                        : 'bg-muted text-muted-foreground'}`}
-                    >
-                      {reaction.emojiImage
-                        ? <img src={reaction.emojiImage} alt={reaction.emoji || messages.feed.emojiAlt} className="h-3.5 w-3.5" loading="lazy" />
-                        : <span>{reaction.emoji || '⭐'}</span>}
-                      <AnimatedMetricNumber value={reaction.count} />
-                    </span>
-                  ))}
-
-                  {post.edited
-                    ? (
-                        <span className="inline-flex items-center rounded-full border bg-muted px-3 py-0.5 text-xs font-semibold text-muted-foreground">
-                          {messages.feed.edited}
-                        </span>
-                      )
-                    : null}
-
-                  {post.views
-                    ? (
-                        <span
-                          className="inline-flex items-center gap-1 rounded-full border bg-muted px-3 py-0.5 text-xs font-semibold text-muted-foreground"
-                          title={messages.feed.viewCountTitle}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <AnimatedMetricNumber value={post.views} />
-                        </span>
-                      )
-                    : null}
-                </div>
-              )
-            : null}
-
         </div>
+      </div>
+
+      <div className="pl-14">
+        {post.tags.length > 0
+          ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Tag className="h-4 w-4 text-muted-foreground" />
+                {post.tags.map(tag => (
+                  <a key={`${post.id}-${tag}`} href={localizePath(uiLocale, `/search?q=${encodeURIComponent(`#${tag}`)}`)}>
+                    <Badge variant="outline" className="cursor-pointer rounded-full px-3 hover:bg-secondary">
+                      {tag}
+                    </Badge>
+                  </a>
+                ))}
+              </div>
+            )
+          : null}
+
+        {post.reactions.length > 0 || post.views || post.edited
+          ? (
+              <div className="mt-3 flex flex-wrap items-center justify-end gap-2" aria-label={messages.feed.reactionsAndViewsAria}>
+                {post.reactions.map(reaction => (
+                  <span
+                    key={`${post.id}-${reaction.emojiId || reaction.emoji}-${reaction.count}`}
+                    className={`inline-flex items-center gap-1 rounded-full border px-3 py-0.5 text-xs font-semibold ${reaction.isPaid
+                      ? 'bg-secondary text-secondary-foreground'
+                      : 'bg-muted text-muted-foreground'}`}
+                  >
+                    {reaction.emojiImage
+                      ? <img src={reaction.emojiImage} alt={reaction.emoji || messages.feed.emojiAlt} className="h-3.5 w-3.5" loading="lazy" />
+                      : <span>{reaction.emoji || '⭐'}</span>}
+                    <AnimatedMetricNumber value={reaction.count} />
+                  </span>
+                ))}
+
+                {post.edited
+                  ? (
+                      <span className="inline-flex items-center rounded-full border bg-muted px-3 py-0.5 text-xs font-semibold text-muted-foreground">
+                        {messages.feed.edited}
+                      </span>
+                    )
+                  : null}
+
+                {post.views
+                  ? (
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full border bg-muted px-3 py-0.5 text-xs font-semibold text-muted-foreground"
+                        title={messages.feed.viewCountTitle}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        <AnimatedMetricNumber value={post.views} />
+                      </span>
+                    )
+                  : null}
+              </div>
+            )
+          : null}
+
       </div>
     </motion.article>
   )
