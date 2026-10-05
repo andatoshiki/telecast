@@ -47,6 +47,42 @@ export function PostCard({
   const unavailableMediaMessage = unavailableMediaDuration
     ? messages.feed.unavailableMediaWithDuration.replace('{duration}', unavailableMediaDuration)
     : messages.feed.unavailableMedia
+  const serviceMessage = post.service?.kind === 'channel-photo-updated'
+    ? messages.feed.channelPhotoUpdated
+    : post.service?.kind === 'message-pinned'
+      ? messages.feed.pinnedMessage
+      : post.service?.kind === 'channel-created'
+        ? messages.feed.channelCreated
+        : post.service?.text || messages.feed.channelServiceUpdated
+  const pinnedPostHref = post.service?.kind === 'message-pinned' && post.service.targetPostId
+    ? localizePath(uiLocale, `/posts/${post.service.targetPostId}`)
+    : ''
+  const serviceCardClassName = 'flex items-center gap-3 rounded-lg border bg-muted/60 px-3 py-3'
+  const serviceCardContent = post.service
+    ? (
+        <>
+          {post.service.image
+            ? (
+                <img
+                  src={post.service.image}
+                  alt={messages.feed.channelPhotoUpdatedAlt}
+                  className="h-14 w-14 shrink-0 rounded-full border bg-background object-cover"
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                />
+              )
+            : null}
+          <div className="min-w-0">
+            <p className="font-medium text-foreground">{serviceMessage}</p>
+            {post.service.kind === 'message-pinned' && post.service.detail
+              ? <p className="mt-1 text-sm leading-5 text-muted-foreground">{post.service.detail}</p>
+              : null}
+            {pinnedPostHref
+              ? <span className="link-smooth mt-2 inline-flex text-[13px] font-medium text-foreground">{messages.feed.viewPinnedPost}</span>
+              : null}
+          </div>
+        </>
+      )
+    : null
 
   return (
     <motion.article
@@ -95,6 +131,19 @@ export function PostCard({
 
           </div>
 
+          {post.service
+            ? pinnedPostHref
+              ? (
+                  <a
+                    href={pinnedPostHref}
+                    className={`${serviceCardClassName} transition-colors hover:bg-muted`}
+                  >
+                    {serviceCardContent}
+                  </a>
+                )
+              : <div className={serviceCardClassName} role="note">{serviceCardContent}</div>
+            : null}
+
           {post.unavailableMedia
             ? (
                 <div className="mb-3 flex items-start gap-2 rounded-lg border bg-muted/60 px-3 py-2 text-[13px] leading-5 text-muted-foreground" role="note">
@@ -116,7 +165,7 @@ export function PostCard({
               )
             : null}
 
-          {post.content
+          {post.type !== 'service' && post.content
             ? <div className="prose-telegram" dangerouslySetInnerHTML={{ __html: post.content }} />
             : null}
 

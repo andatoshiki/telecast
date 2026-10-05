@@ -353,6 +353,10 @@ function countSnapshotMediaCandidates(snapshot: StaticSnapshot) {
         trackMirrorCandidate(candidate, candidates)
       }
 
+      if (post.service?.image) {
+        trackMirrorCandidate(post.service.image, candidates)
+      }
+
       for (const reaction of post.reactions) {
         if (reaction.emojiImage) {
           trackMirrorCandidate(reaction.emojiImage, candidates)
@@ -591,6 +595,10 @@ async function mirrorSnapshotAssets(snapshot: StaticSnapshot) {
 
       for (const post of channel.posts) {
         post.content = await rewriteHtmlMediaUrls(post.content || '', mirrorUrl)
+
+        if (post.service?.image) {
+          post.service.image = applyCloudflareImageTransform(await mirrorUrl(post.service.image))
+        }
 
         for (const reaction of post.reactions) {
           if (reaction.emojiImage) {

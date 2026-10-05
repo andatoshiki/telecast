@@ -1,4 +1,4 @@
-import type { ChannelInfo, ChannelPost, ChannelReaction, DocumentAttachment, UnavailableMedia } from '@/lib/types'
+import type { ChannelInfo, ChannelPost, ChannelReaction, ChannelServiceEvent, DocumentAttachment, UnavailableMedia } from '@/lib/types'
 import * as cheerio from 'cheerio'
 import flourite from 'flourite'
 import { LRUCache } from 'lru-cache'
@@ -333,6 +333,83 @@ function getDocumentAttachments(
     })
 }
 
+function getServiceEvent(
+  messageNode: cheerio.Cheerio<any>,
+  staticProxy: string,
+): ChannelServiceEvent | undefined {
+  const className = messageNode.attr('class') || ''
+  if (!className.includes('service_message')) {
+    return undefined
+  }
+
+  const text = messageNode
+    .find('.tgme_widget_message_text')
+    .first()
+    .text()
+    .replace(/\s+/g, ' ')
+    .trim()
+  const rawImage = messageNode
+    .find('.tgme_widget_message_service_photo img')
+    .first()
+    .attr('src')
+    ?.trim() || ''
+  const detail = messageNode
+    .find('.tgme_widget_service_strong_text')
+    .first()
+    .text()
+    .replace(/\s+/g, ' ')
+    .trim()
+  const kind = className.includes('service_message_photo')
+    ? 'channel-photo-updated'
+    : /\bpinned\b/i.test(text) && detail
+      ? 'message-pinned'
+      : /^channel created$/i.test(text)
+        ? 'channel-created'
+        : 'generic'
+
+  return {
+    kind,
+    text,
+    ...(detail ? { detail } : {}),
+    ...(rawImage ? { image: buildStaticProxyUrl(staticProxy, rawImage) } : {}),
+  }
+}
+
+function normalizePinnedPreview(value: string) {
+  return value
+    .normalize('NFKC')
+    .replace(/(?:\.{3}|…)+$/u, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLocaleLowerCase()
+}
+
+export function applyPinnedMessageTargets(posts: ChannelPost[]) {
+  const textPosts = [...new Map(
+    posts
+      .filter(post => post.type === 'text' && post.id && post.text)
+      .map(post => [post.id, post]),
+  ).values()]
+
+  for (const post of posts) {
+    if (post.service?.kind !== 'message-pinned' || post.service.targetPostId) {
+      continue
+    }
+
+    const preview = normalizePinnedPreview(post.service.detail || '')
+    if (!preview) {
+      continue
+    }
+
+    const matches = textPosts.filter(candidate => normalizePinnedPreview(candidate.text).startsWith(preview))
+    if (matches.length === 1) {
+      post.service.targetPostId = matches[0].id
+    }
+  }
+
+  return posts
+}
+
 function getLinkPreview($: cheerio.CheerioAPI, item: cheerio.Element, staticProxy: string, _index: number) {
   const link = $(item).find('.tgme_widget_message_link_preview')
   const title = $(item).find('.link_preview_title')?.text() || $(item).find('.link_preview_site_name')?.text() || ''
@@ -576,6 +653,7 @@ async function getPost(
   const id = messageNode.attr('data-post')?.replace(new RegExp(`${channel}/`, 'i'), '') || ''
   const unavailableMedia = getUnavailableMedia(messageNode, channel, id)
   const attachments = getDocumentAttachments($, messageNode, channel, id)
+  const service = getServiceEvent(messageNode, staticProxy)
 
   const tags = contentNode
     .find('a[href^="?q="]')
@@ -618,6 +696,7 @@ async function getPost(
     content: sanitizePostHtml(rawContent),
     ...(unavailableMedia ? { unavailableMedia } : {}),
     ...(attachments.length > 0 ? { attachments } : {}),
+    ...(service ? { service } : {}),
     reactions: reactionsEnabled ? getReactions($, messageNode[0], staticProxy) : [],
   }
 }
@@ -738,9 +817,11 @@ export async function getChannelInfo(options: ChannelQuery = {}): Promise<Channe
   const postNodes = $('.tgme_channel_history  .tgme_widget_message_wrap')?.toArray() ?? []
   const parsedPosts = await Promise.all(postNodes.map((item, index) => getPost($, item, cfg.channel, cfg.staticProxy, index, cfg.reactionsEnabled)))
 
-  const posts = parsedPosts
-    .reverse()
-    .filter(post => post.type === 'text' && post.id && post.content)
+  const posts = applyPinnedMessageTargets(
+    parsedPosts
+      .reverse()
+      .filter(post => post.id && (post.type === 'service' ? Boolean(post.service) : Boolean(post.content))),
+  )
 
   const descriptionNode = await modifyHtmlContent($, $('.tgme_channel_info_description'), 0, cfg.staticProxy)
 

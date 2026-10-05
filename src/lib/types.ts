@@ -17,6 +17,14 @@ export interface DocumentAttachment {
   url: string
 }
 
+export interface ChannelServiceEvent {
+  kind: 'channel-photo-updated' | 'message-pinned' | 'channel-created' | 'generic'
+  text: string
+  detail?: string
+  image?: string
+  targetPostId?: string
+}
+
 export interface ChannelPost {
   id: string
   title: string
@@ -29,6 +37,7 @@ export interface ChannelPost {
   content: string
   unavailableMedia?: UnavailableMedia
   attachments?: DocumentAttachment[]
+  service?: ChannelServiceEvent
   reactions: ChannelReaction[]
 }
 

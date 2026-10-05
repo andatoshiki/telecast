@@ -47,6 +47,12 @@ export const jaMessages: LocaleMessages = {
     attachmentFallbackName: '添付ファイル',
     attachmentTelegramOnly: 'Telegram ではこのファイルの直接ダウンロードリンクが公開されていません。',
     openAttachmentOnTelegram: 'Telegram で添付ファイルを開く',
+    channelPhotoUpdated: 'チャンネル写真が更新されました',
+    channelPhotoUpdatedAlt: '更新されたチャンネル写真',
+    pinnedMessage: '固定されたメッセージ',
+    viewPinnedPost: '固定された投稿を見る',
+    channelCreated: 'チャンネルが作成されました',
+    channelServiceUpdated: 'チャンネルが更新されました',
   },
   post: {
     backToFeed: 'フィードに戻る',

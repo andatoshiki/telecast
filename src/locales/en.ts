@@ -45,6 +45,12 @@ export interface LocaleMessages {
     attachmentFallbackName: string
     attachmentTelegramOnly: string
     openAttachmentOnTelegram: string
+    channelPhotoUpdated: string
+    channelPhotoUpdatedAlt: string
+    pinnedMessage: string
+    viewPinnedPost: string
+    channelCreated: string
+    channelServiceUpdated: string
   }
   post: {
     backToFeed: string
@@ -144,6 +150,12 @@ export const enMessages: LocaleMessages = {
     attachmentFallbackName: 'File attachment',
     attachmentTelegramOnly: 'Telegram does not provide a direct web download for this file.',
     openAttachmentOnTelegram: 'Open the attachment in Telegram',
+    channelPhotoUpdated: 'Channel photo updated',
+    channelPhotoUpdatedAlt: 'Updated channel photo',
+    pinnedMessage: 'Pinned message',
+    viewPinnedPost: 'View pinned post',
+    channelCreated: 'Channel created',
+    channelServiceUpdated: 'Channel updated',
   },
   post: {
     backToFeed: 'Back to Feed',

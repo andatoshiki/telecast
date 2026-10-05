@@ -47,6 +47,12 @@ export const zhMessages: LocaleMessages = {
     attachmentFallbackName: '附件',
     attachmentTelegramOnly: 'Telegram 未提供此文件的网页直接下载链接。',
     openAttachmentOnTelegram: '在 Telegram 中打开附件',
+    channelPhotoUpdated: '频道头像已更新',
+    channelPhotoUpdatedAlt: '已更新的频道头像',
+    pinnedMessage: '已置顶的消息',
+    viewPinnedPost: '查看置顶帖子',
+    channelCreated: '频道已创建',
+    channelServiceUpdated: '频道已更新',
   },
   post: {
     backToFeed: '返回动态',

@@ -4,7 +4,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { getAppConfig } from '@/lib/config'
 import { SITE_CONSTANTS } from '@/lib/constant'
-import { getChannelInfo } from '@/lib/telegram'
+import { applyPinnedMessageTargets, getChannelInfo } from '@/lib/telegram'
 
 export interface SnapshotPage {
   cursor: string
@@ -115,6 +115,8 @@ export async function buildRemoteStaticSnapshot(): Promise<StaticSnapshot> {
   finally {
     fetchTracker.finish()
   }
+
+  applyPinnedMessageTargets(pages.flatMap(page => page.channel.posts))
 
   const root = pages[0]?.channel || await getChannelInfo() as ChannelInfo
 
