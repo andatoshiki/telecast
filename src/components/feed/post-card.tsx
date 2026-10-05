@@ -210,25 +210,25 @@ export function PostCard({
               )
             : null}
 
+          {post.tags.length > 0
+            ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Tag className="h-4 w-4 text-muted-foreground" />
+                  {post.tags.map(tag => (
+                    <a key={`${post.id}-${tag}`} href={localizePath(uiLocale, `/search?q=${encodeURIComponent(`#${tag}`)}`)}>
+                      <Badge variant="outline" className="cursor-pointer rounded-full px-3 hover:bg-secondary">
+                        {tag}
+                      </Badge>
+                    </a>
+                  ))}
+                </div>
+              )
+            : null}
+
         </div>
       </div>
 
       <div className="pl-14">
-        {post.tags.length > 0
-          ? (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Tag className="h-4 w-4 text-muted-foreground" />
-                {post.tags.map(tag => (
-                  <a key={`${post.id}-${tag}`} href={localizePath(uiLocale, `/search?q=${encodeURIComponent(`#${tag}`)}`)}>
-                    <Badge variant="outline" className="cursor-pointer rounded-full px-3 hover:bg-secondary">
-                      {tag}
-                    </Badge>
-                  </a>
-                ))}
-              </div>
-            )
-          : null}
-
         {post.reactions.length > 0 || post.views || post.edited
           ? (
               <div className="mt-3 flex flex-wrap items-center justify-end gap-2" aria-label={messages.feed.reactionsAndViewsAria}>
