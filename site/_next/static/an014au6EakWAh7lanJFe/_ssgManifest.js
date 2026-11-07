@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002F[locale]","\u002F[locale]\u002Fafter\u002F[cursor]","\u002F[locale]\u002Fbefore\u002F[cursor]","\u002F[locale]\u002Fposts\u002F[id]","\u002F[locale]\u002Fsearch","\u002F[locale]\u002Ftags","\u002Fafter\u002F[cursor]","\u002Fbefore\u002F[cursor]","\u002Fposts\u002F[id]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
